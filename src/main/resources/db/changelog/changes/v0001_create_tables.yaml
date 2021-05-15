@@ -1,0 +1,253 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1616132814259-1
+      author: olegprokhorov (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: time
+                  type: datetime
+              - column:
+                  constraints:
+                    nullable: false
+                  name: code
+                  type: TEXT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: secret_code
+                  type: TINYTEXT
+            tableName: captcha_codes
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: code
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: value
+                  type: VARCHAR(255)
+            tableName: global_settings
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_active
+                  type: TINYINT(3)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: moderation_status
+                  type: ENUM('NEW', 'ACCEPTED', 'DECLINED')
+              - column:
+                  name: moderator_id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: time
+                  type: datetime
+              - column:
+                  constraints:
+                    nullable: false
+                  name: title
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: text
+                  type: TEXT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: view_count
+                  type: INT
+            tableName: posts
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: INT
+              - column:
+                  name: parent_id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: post_id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: time
+                  type: datetime
+              - column:
+                  constraints:
+                    nullable: false
+                  name: text
+                  type: TEXT
+            tableName: post_comments
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: post_id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: time
+                  type: datetime
+              - column:
+                  constraints:
+                    nullable: false
+                  name: value
+                  type: INT
+            tableName: post_votes
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: post_id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: tag_id
+                  type: INT
+            tableName: tag2post
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(255)
+            tableName: tags
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_moderator
+                  type: TINYINT(3)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: reg_time
+                  type: datetime
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  name: code
+                  type: VARCHAR(255)
+              - column:
+                  name: photo
+                  type: TEXT
+            tableName: users
+  - changeSet:
+      id: 16161328142-2
+      author: olegprokhorov (generated)
+      changes:
+        - addUniqueConstraint:
+            tableName: global_settings
+            columnNames: code
+            constraintName: code
+
+
+

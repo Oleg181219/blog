@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    url: jdbc:${CLEARDB_DATABASE_URL:mysql://localhost:3306/blog_engine}
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5120KB
+      max-request-size: 5120KB
+
+
+
+spring.jpa.show-sql: true
+properties.hibernate.dialect: org.hibernate.dialect.MySQL7Dialect
+enable_lazy_load_no_trans: true
+logging.level.org.springframework: INFO
+
+#data init
+blog.title: DevPub
+blog.subtitle: Интересные истории
+blog.phone: +7-913-450-68-60
+blog.email: iGarik10@yandex.ru
+blog.copyright: Oleg Prokhorov
+blog.copyrightFrom: 2021
+#lifetime in seconds
+blog.lifeTimeCaptchaCode: 1800
+#password all users 12345678
+#mail data
+blog.myEmail: test.diplom.blog@gmail.com
+blog.myPassword: 01012000test
+blog.address: http://localhost:8080/login/change-password/
+
+blog.cloud_name: dsnia8hfx
+blog.api_key: '567365452572383'
+blog.api_secret: 6_-E13f997sdsvq7F4oykc9DnEE
+
+server:
+  port: ${PORT:8080}

@@ -1,0 +1,1343 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1616132814259-10
+      author: olegprokhorov (generated)
+      comment: "Add global_setting"
+      changes:
+        - insert:
+            tableName: global_settings
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: code
+                  value: "MULTIUSER_MODE"
+              - column:
+                  name: name
+                  value: "Многопользовательский режим"
+              - column:
+                  name: value
+                  value: "YES"
+        - insert:
+            tableName: global_settings
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: code
+                  value: "POST_PREMODERATION"
+              - column:
+                  name: name
+                  value: "Премодерация постов"
+              - column:
+                  name: value
+                  value: "YES"
+        - insert:
+            tableName: global_settings
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: code
+                  value: "STATISTICS_IS_PUBLIC"
+              - column:
+                  name: name
+                  value: "Показывать всем статистику блога"
+              - column:
+                  name: value
+                  value: "YES"
+  - changeSet:
+      id: 1616132814259-11
+      author: olegprokhorov (generated)
+      comment: "Add user"
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: is_moderator
+                  value: "1"
+              - column:
+                  name: reg_time
+                  value: "2021-03-10 10:10:10"
+              - column:
+                  name: name
+                  value: "Ivan moder"
+              - column:
+                  name: email
+                  value: "ivanp@protonmail.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2021-03-10 12:10:10"
+              - column:
+                  name: name
+                  value: "Ivan ne moder"
+              - column:
+                  name: email
+                  value: "ivanp2@protonmail.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2021-03-11 10:10:10"
+              - column:
+                  name: name
+                  value: "Tretiy"
+              - column:
+                  name: email
+                  value: "ivanptretiy@protonmail.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "4"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2021-03-11 08:10:10"
+              - column:
+                  name: name
+                  value: "Четвертый"
+              - column:
+                  name: email
+                  value: "ivanpfour@protonmail.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "5"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2020-11-12 08:10:10"
+              - column:
+                  name: name
+                  value: "Пятый"
+              - column:
+                  name: email
+                  value: "five@mail.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "6"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2020-12-11 08:10:10"
+              - column:
+                  name: name
+                  value: "Six"
+              - column:
+                  name: email
+                  value: "six@ya.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "7"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2020-11-11 08:10:10"
+              - column:
+                  name: name
+                  value: "Seven"
+              - column:
+                  name: email
+                  value: "seven@mail.ru"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "8"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2021-01-11 08:10:10"
+              - column:
+                  name: name
+                  value: "Eight"
+              - column:
+                  name: email
+                  value: "eight@gmail.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "9"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2021-02-10 08:10:10"
+              - column:
+                  name: name
+                  value: "Nine"
+              - column:
+                  name: email
+                  value: "nine@pochta.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "10"
+              - column:
+                  name: is_moderator
+                  value: "1"
+              - column:
+                  name: reg_time
+                  value: "2021-03-11 08:10:10"
+              - column:
+                  name: name
+                  value: "Ten-moder"
+              - column:
+                  name: email
+                  value: "tenmoder@mail.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "11"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2021-03-11 08:10:10"
+              - column:
+                  name: name
+                  value: "Четвертый"
+              - column:
+                  name: email
+                  value: "ivanpfour@protonmail.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "12"
+              - column:
+                  name: is_moderator
+                  value: "-1"
+              - column:
+                  name: reg_time
+                  value: "2021-01-01 08:10:10"
+              - column:
+                  name: name
+                  value: "OneOne"
+              - column:
+                  name: email
+                  value: "oneone@protonmail.com"
+              - column:
+                  name: password
+                  value: "$2y$12$7MAIUeidRiKW5apo8S3GauDTqhi3KqYbkxKQhNWUIZ5d22RoMjPiW"
+              - column:
+                  name: code
+                  value: "321"
+              - column:
+                  name: photo
+                  value: "https://www.zastavki.com/pictures/originals/2018Animals___Cats_Little_cute_gray_kitten_closeup_124917_.jpg"
+  - changeSet:
+      id: 1616132814259-12
+      author: olegprokhorov (generated)
+      comment: "Add tags"
+      changes:
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: name
+                  value: "java"
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: name
+                  value: "forlife"
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: name
+                  value: "C#"
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  value: "4"
+              - column:
+                  name: name
+                  value: "#java"
+  - changeSet:
+      id: 1616132814259-13
+      author: olegprokhorov (generated)
+      comment: "tag2post"
+      changes:
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: post_id
+                  value: "1"
+              - column:
+                  name: tag_id
+                  value: "1"
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: post_id
+                  value: "2"
+              - column:
+                  name: tag_id
+                  value: "3"
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: post_id
+                  value: "4"
+              - column:
+                  name: tag_id
+                  value: "3"
+        - insert:
+            tableName: tag2post
+            columns:
+              - column:
+                  name: id
+                  value: "4"
+              - column:
+                  name: post_id
+                  value: "3"
+              - column:
+                  name: tag_id
+                  value: "2"
+  - changeSet:
+      id: 1616132814259-14
+      author: olegprokhorov (generated)
+      comment: "Add post_votes"
+      changes:
+        - insert:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "1"
+              - column:
+                  name: post_id
+                  value: "1"
+              - column:
+                  name: time
+                  value: "2021-04-08 10:30:10"
+              - column:
+                  name: value
+                  value: "1"
+        - insert:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: user_id
+                  value: "3"
+              - column:
+                  name: post_id
+                  value: "2"
+              - column:
+                  name: time
+                  value: "2021-04-08 10:30:10"
+              - column:
+                  name: value
+                  value: "1"
+        - insert:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: user_id
+                  value: "1"
+              - column:
+                  name: post_id
+                  value: "2"
+              - column:
+                  name: time
+                  value: "2021-04-08 10:30:10"
+              - column:
+                  name: value
+                  value: "-1"
+        - insert:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: id
+                  value: "4"
+              - column:
+                  name: user_id
+                  value: "4"
+              - column:
+                  name: post_id
+                  value: "4"
+              - column:
+                  name: time
+                  value: "2021-04-08 10:30:10"
+              - column:
+                  name: value
+                  value: "1"
+        - insert:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: id
+                  value: "5"
+              - column:
+                  name: user_id
+                  value: "2"
+              - column:
+                  name: post_id
+                  value: "4"
+              - column:
+                  name: time
+                  value: "2021-04-08 10:30:10"
+              - column:
+                  name: value
+                  value: "-1"
+  - changeSet:
+      id: 1616132814259-15
+      author: olegprokhorov (generated)
+      comment: "Add posts"
+      changes:
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "1"
+              - column:
+                  name: time
+                  value: "2021-03-10 10:30:10"
+              - column:
+                  name: title
+                  value: "За последние несколько занятий мы сильно продвинулись в освоении ArrayList"
+              - column:
+                  name: text
+                  value: "Привет!
+                  За последние несколько занятий мы сильно продвинулись в освоении ArrayList.
+                  Однако, в течение этого времени мы совершали только простейшие операции: удаление, вставку, вывод в консоль. Конечно, на этом список задач, с которыми сталкиваются разработчики при использовании ArrayList, не исчерпывается.
+                  Помнишь лекцию о массивах и классе Arrays? Он был разработан создателями Java специально для того, чтобы решать типовые задачи, с которыми программисты сталкиваются при работе с массивами.
+                  А что с ArrayList? Наверняка есть какой-то список типовых задач и для него. Были ли они все реализованы в каком-то отдельном классе, или нам придется каждый раз писать нужное поведение вручную?
+                  Разумеется, писать все самим не потребуется.
+                  Наиболее распространенные операции, которые совершаются при использовании коллекций в Java, уже были реализованы в специальном статическом классе Collections"
+              - column:
+                  name: view_count
+                  value: "15"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "2"
+              - column:
+                  name: time
+                  value: "2021-03-10 11:30:10"
+              - column:
+                  name: title
+                  value: "В этой статье я разберу использование утилиты Liquibase в Spring Boot"
+              - column:
+                  name: text
+                  value: "В этой статье я разберу использование утилиты Liquibase в Spring Boot приложениях для версионирования структуры реляционной БД и миграции этой структуры с одной версии на другую. В первой части разберем базовый пример, а во второй поговорим об использовании liquibase-mave-plugin для отката изменений и автоматической генерации скриптов через сравнение структур БД.
+                  Начнем с того, что создадим простейшее приложение на Spring Boot + JPA (Hibernate). В этом нам поможет Spring Initializr. Из зависимостей выбираем JPA, MySQL и Web. Liquibase тоже можно подключить на этом шаге, но для лучшего понимания мы это сделаем далее вручную."
+              - column:
+                  name: view_count
+                  value: "20"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "3"
+              - column:
+                  name: time
+                  value: "2021-03-10 11:35:10"
+              - column:
+                  name: title
+                  value: "Liquibase и написали базовый пример Spring boot"
+              - column:
+                  name: text
+                  value: "В предыдущей части мы разобрались с основными возможностями Liquibase и написали базовый пример Spring boot приложения, который использует Liquibase для инициализации БД. Полный код базового приложения можно увидеть тут на GitHub. В этой статье мы поговорим про liquibase-maven-plugin и те дополнительные возможности, которые он нам дает для версионирования структуры БД. Начнем с того, как автоматически создавать скрипты при помощи функции сравнения.
+                  Предположим, что нам понадобилось внести какие-либо изменения в структуру нашей БД. Например, мы хотим, чтобы email не мог быть null. Безусловно, для такого маленького изменения можно было бы подкорректировать код и скрипты вручную, но как быть если изменений будет больше? В этом случае к нам на помощь придет встроенная в Liquibase возможность сравнения БД. Интересной её особенностью является то, что сравнивать можно не только две базы данных, но и базу данных с набором JPA сущностей в нашем приложении. Именно так мы сейчас и поступим!"
+              - column:
+                  name: view_count
+                  value: "4"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "4"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "3"
+              - column:
+                  name: time
+                  value: "2021-03-11 12:30:10"
+              - column:
+                  name: title
+                  value: "О прогрессорстве в кровавом Enterprise"
+              - column:
+                  name: text
+                  value: "О прогрессорстве в кровавом Enterprise
+                          На самом деле, американец, я благодарен за ту задачу. Это была \"вкусная\" задача. Мне было интересно, и я многое узнал. Конечно, обидно, что то что я сделал, почти не использовали. Но теперь я понимаю, что это было неизбежно.
+                          Такого рода системы не живут сами по себе в вакууме. Это не WinZip и не Total Commander. У них есть привязка к Active directory, пермиссии пользователей, каталог серверов и многое другое, за чем кто-то должен следить.
+                          Представь, что на некоей планете высадились прогрессоры - ну как у Стругацких. Читал? Да, конечно читал, ты же воображаемый американец. На планете раннее средневековье. Прогрессоры задерживаться на планете долго не могут, но могут оставить что-то в подарок. Что имеет смысл оставить?
+                          Завод по производству роботов? Да уже через пару дней он остановится. Разве что из силовых балок строения сделают мечи. Технология должна быть адекватна умениям туземцев. иначе она не приживется. Ну или приживется только как карго культ."
+              - column:
+                  name: view_count
+                  value: "3"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "5"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "4"
+              - column:
+                  name: time
+                  value: "2021-03-10 11:30:10"
+              - column:
+                  name: title
+                  value: "Началось все в 2013 году"
+              - column:
+                  name: text
+                  value: "Началось все в 2013 году. Тогда я жил в Екатеринбурге, работал в офисе и подрабатывал на удаленке. Когда доход на удаленке вырос до 100 тысяч рублей, понял, что могу сосредоточиться только на удаленной работе и переехать куда-нибудь.
+                  Я много где был, но решил присмотреться к Таиланду. И понял, что вариант почти идеальный: много солнца, море под боком и все стоит очень дешево. Для меня это было важно — с моим доходом от удаленки где-нибудь в Европе жить было бы тяжко.
+                  В итоге бросил работу в офисе и рванул в Таиланд. Из всех мест выбрал Пхукет — это тихий, спокойный остров, который очень любят русские туристы и зимовщики. Цены тут могут быть повыше, чем в других регионах Таиланда, зато атмосфера для жизни более приятная и море чистое. Потому что, например, Паттайя меня в свое время повергла в шок — там слишком шумно, а движение по дорогам настолько ужасное, что дорогу страшно переходить даже в положенном месте.
+                  Сначала все было хорошо, но в 2014 случилось падение рубля. Я по-прежнему работал удаленно за рубли, и получилось, что мой доход упал практически в два раза. Я стал искать работу здесь, на Пхукете — и устроился менеджером по продажам к местному застройщику. В итоге стал получать зарплату в местной валюте, батах, а они, можно сказать, привязаны к доллару. А чуть позже набрался опыта в сфере недвижимости и открыл свое агентство — помогаю иностранцам переезжать в Таиланд и покупать здесь недвижимость для жизни и инвестиций.
+                  В общем, я живу на Пхукете уже 7 лет, много общаюсь с тайцами и не меньше — с иностранцами, которые сюда переезжают. Я видел, пожалуй, все аспекты жизни на этом острове и знаю, что люди здесь ищут, а что им не нравится. И хочу всем этим поделиться. Только учтите, что этот опыт нельзя перенести на весь Таиланд. В Паттайе, Бангкоке, в других городах и на других островах все будет по-другому — Пхукет очень особенное место."
+              - column:
+                  name: view_count
+                  value: "52"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "6"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "4"
+              - column:
+                  name: time
+                  value: "2021-04-01 11:30:10"
+              - column:
+                  name: title
+                  value: "Шпаргалка Java программиста 4. Java Stream API"
+              - column:
+                  name: text
+                  value: "Несмотря на то, что Java 8 вышла уже достаточно давно,
+                  далеко не все программисты используют её новые возможности,
+                  кого-то останавливает то, что рабочие проекты слишком сложно перевести с Java 7 или даже Java 6,
+                   кого-то использование в своих проектах GWT,
+                    кто-то делает проекты под Android и не хочет или не может использовать сторонние
+                    библиотеки для реализации лямбд и Stream Api.
+                    Однако знание лямбд и Stream Api для программиста Java зачастую требуют на собеседованиях,
+                     ну и просто будет полезно при переходе на проект где используется Java 8.
+                     Я хотел бы предложить вам краткую шпаргалку по Stream Api с практическими примерами
+                     реализации различных задач с новым функциональным подходом.
+                     Знания лямбд и функционального программирования не потребуется
+                     (я постарался дать примеры так, чтобы все было понятно),
+                      уровень от самого базового знания Java и выше.
+                     Также, так как это шпаргалка, статья может использоваться, чтобы быстро вспомнить как работает та или иная особенность Java Stream Api. Краткое перечисление возможностей основных функций дано в начале статьи."
+              - column:
+                  name: view_count
+                  value: "33"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "7"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "3"
+              - column:
+                  name: time
+                  value: "2021-04-01 23:05:00"
+              - column:
+                  name: title
+                  value: "Open Session In View в Spring Boot: Скрытая угроза"
+              - column:
+                  name: text
+                  value: "Если вы используете Spring Data JPA, то после обновления на Spring Boot 2 при старте приложения можете заметить в логе новое предупреждение:
+                          spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering.
+                          Explicitly configure spring.jpa.open-in-view to disable this warning.
+                          В этой статье попытаюсь объяснить, что это значит, кто виноват и что делать.
+                          Для поднятия полноценного приложения на Spring Boot требуется всего лишь одна аннотация @SpringBootApplication.
+                           Для того, чтобы это было возможным, фреймворк использует большое количество автоконфигураций и настроек по умолчанию.
+                           Более того, для работы \"из коробки\" разработчикам Spring Boot пришлось выбрать некие концепции разработки приложений из нескольких альтернативных вариантов для каждой,
+                           чтобы пользователю не нужно было выбирать их явно. С одной стороны это хорошо для быстрого старта и легкой разработки, но с другой – через некоторое время может оказаться, что некая используемая по умолчанию концепция/парадигма/настройка не подходит для проекта, а для отказа от нее придется многое переделать. Одной из таких концепций является режим Open Session In View (OSIV), включенный в Spring Boot по умолчанию."
+              - column:
+                  name: view_count
+                  value: "21"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "8"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "2"
+              - column:
+                  name: time
+                  value: "2021-04-02 03:05:00"
+              - column:
+                  name: title
+                  value: "Spring Cache: от подключения кэширования за 1 минуту до гибкой настройки кэш-менеджера"
+              - column:
+                  name: text
+                  value: "В данном посте я постараюсь объяснить о кэшировании так же просто, как это сейчас понимаю я.
+                  Вы узнаете о том, как внедрить кэширование за 1 минуту, как кэшировать по ключу, устанавливать время жизни кэша,
+                  и многие прочие штуки, которые необходимо знать, если Вам поручили закэшировать что-то
+                  в вашем рабочем проекте, и Вы не хотите ударить в грязь лицом.
+                          Почему я говорю «поручили»? Потому что кэширование, как правило, есть смысл применять в больших,
+                          высоконагруженных проектах, с десятками тысяч запросов в минуту. В таких проектах,
+                          чтобы не перегружать базу, как правило, кэшируют обращения к репозиторию. Особенно если известно,
+                           что данные из какой-нибудь мастер-системы обновляются с некоторой периодичностью.
+                           Сами мы такие проекты не пишем, мы на них работаем. Если же проект маленький и
+                           перегрузки ему не грозят, тогда, конечно,
+                          лучше ничего не кэшировать — всегда свежие данные всегда лучше периодически обновляемых."
+              - column:
+                  name: view_count
+                  value: "25"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "9"
+              - column:
+                  name: is_active
+                  value: "0"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "5"
+              - column:
+                  name: time
+                  value: "2020-07-12 03:05:00"
+              - column:
+                  name: title
+                  value: "(Non Active)Версионирование структуры БД при помощи Liquibase"
+              - column:
+                  name: text
+                  value: "Большая часть приложений, которые мне встречались, хранят данные в SQL базе данных. Если у вас корпоративное приложение, то скорее всего имеется несколько стендов: стенд разработки, пре-прод и прод. А над приложением трудится команда разработчиков.
+                          Такие приложения сталкиваются с проблемой синхронизации схемы БД между контурами и самими разработчиками. Надо как-то передать изменения, которые вы внесли всем остальным и при этом не получить конфликты.
+                          Эти проблемы решает система управления миграциями Liquibase. Это своего рода система контроля версий вашей базы данных.
+                          Liquibase - независимая от базы данных библиотека для отслеживания, управления и применения изменений схемы базы данных.
+                          Изменения для БД записываются в формате понятном Liquibase, а уже он в свою очередь выполняет запросы к базе данных. Таким образом реализуется независимость от конкретной БД. Liquibase поддерживает 10 типов баз данных, включая DB2, Apache Derby, MySQL, PostgreSQL, Oracle, Microsoft® SQL Server, Sybase и HSQL. Список всех поддерживаемых БД можно посмотреть на сайте."
+              - column:
+                  name: view_count
+                  value: "17"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "10"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "NEW"
+              - column:
+                  name: moderator_id
+                  value: "10"
+              - column:
+                  name: user_id
+                  value: "6"
+              - column:
+                  name: time
+                  value: "2020-12-24 03:05:00"
+              - column:
+                  name: title
+                  value: "(NEW)Версионирование структуры БД при помощи Liquibase"
+              - column:
+                  name: text
+                  value: "Большая часть приложений, которые мне встречались, хранят данные в SQL базе данных. Если у вас корпоративное приложение, то скорее всего имеется несколько стендов: стенд разработки, пре-прод и прод. А над приложением трудится команда разработчиков.
+                                  Такие приложения сталкиваются с проблемой синхронизации схемы БД между контурами и самими разработчиками. Надо как-то передать изменения, которые вы внесли всем остальным и при этом не получить конфликты.
+                                  Эти проблемы решает система управления миграциями Liquibase. Это своего рода система контроля версий вашей базы данных.
+                                  Liquibase - независимая от базы данных библиотека для отслеживания, управления и применения изменений схемы базы данных.
+                                  Изменения для БД записываются в формате понятном Liquibase, а уже он в свою очередь выполняет запросы к базе данных. Таким образом реализуется независимость от конкретной БД. Liquibase поддерживает 10 типов баз данных, включая DB2, Apache Derby, MySQL, PostgreSQL, Oracle, Microsoft® SQL Server, Sybase и HSQL. Список всех поддерживаемых БД можно посмотреть на сайте."
+              - column:
+                  name: view_count
+                  value: "10"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "11"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "DECLINED"
+              - column:
+                  name: moderator_id
+                  value: "10"
+              - column:
+                  name: user_id
+                  value: "7"
+              - column:
+                  name: time
+                  value: "2021-02-12 03:05:00"
+              - column:
+                  name: title
+                  value: "(DECLINED)Версионирование структуры БД при помощи Liquibase"
+              - column:
+                  name: text
+                  value: "Большая часть приложений, которые мне встречались, хранят данные в SQL базе данных. Если у вас корпоративное приложение, то скорее всего имеется несколько стендов: стенд разработки, пре-прод и прод. А над приложением трудится команда разработчиков.
+                                  Такие приложения сталкиваются с проблемой синхронизации схемы БД между контурами и самими разработчиками. Надо как-то передать изменения, которые вы внесли всем остальным и при этом не получить конфликты.
+                                  Эти проблемы решает система управления миграциями Liquibase. Это своего рода система контроля версий вашей базы данных.
+                                  Liquibase - независимая от базы данных библиотека для отслеживания, управления и применения изменений схемы базы данных.
+                                  Изменения для БД записываются в формате понятном Liquibase, а уже он в свою очередь выполняет запросы к базе данных. Таким образом реализуется независимость от конкретной БД. Liquibase поддерживает 10 типов баз данных, включая DB2, Apache Derby, MySQL, PostgreSQL, Oracle, Microsoft® SQL Server, Sybase и HSQL. Список всех поддерживаемых БД можно посмотреть на сайте."
+              - column:
+                  name: view_count
+                  value: "13"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "12"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "10"
+              - column:
+                  name: user_id
+                  value: "8"
+              - column:
+                  name: time
+                  value: "2021-07-12 03:05:00"
+              - column:
+                  name: title
+                  value: "(отложенное)Версионирование структуры БД при помощи Liquibase"
+              - column:
+                  name: text
+                  value: "Большая часть приложений, которые мне встречались, хранят данные в SQL базе данных. Если у вас корпоративное приложение, то скорее всего имеется несколько стендов: стенд разработки, пре-прод и прод. А над приложением трудится команда разработчиков.
+                                          Такие приложения сталкиваются с проблемой синхронизации схемы БД между контурами и самими разработчиками. Надо как-то передать изменения, которые вы внесли всем остальным и при этом не получить конфликты.
+                                          Эти проблемы решает система управления миграциями Liquibase. Это своего рода система контроля версий вашей базы данных.
+                                          Liquibase - независимая от базы данных библиотека для отслеживания, управления и применения изменений схемы базы данных.
+                                          Изменения для БД записываются в формате понятном Liquibase, а уже он в свою очередь выполняет запросы к базе данных. Таким образом реализуется независимость от конкретной БД. Liquibase поддерживает 10 типов баз данных, включая DB2, Apache Derby, MySQL, PostgreSQL, Oracle, Microsoft® SQL Server, Sybase и HSQL. Список всех поддерживаемых БД можно посмотреть на сайте."
+              - column:
+                  name: view_count
+                  value: "13"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "13"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "10"
+              - column:
+                  name: user_id
+                  value: "11"
+              - column:
+                  name: time
+                  value: "2021-01-17 03:05:00"
+              - column:
+                  name: title
+                  value: "Неявное соединение таблиц"
+              - column:
+                  name: text
+                  value: "Нередко возникает необходимость в одном запросе получить данные сразу из нескольких таблиц.
+                  Для сведения данных из разных таблиц мы можем использовать разные способы.
+                  В данной статье рассмотрим не самый распространный, однако довольно простой способ, который представляет неявное соединение таблиц.
+                  Допустим, у нас есть следующие таблицы, которые связаны между собой связями:"
+              - column:
+                  name: view_count
+                  value: "31"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "14"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "10"
+              - column:
+                  name: user_id
+                  value: "12"
+              - column:
+                  name: time
+                  value: "2021-01-31 03:05:00"
+              - column:
+                  name: title
+                  value: "Разбивка на страницы и сортировка с помощью Spring Data JPA"
+              - column:
+                  name: text
+                  value: "Изучите разбиение на страницы и сортировку с помощью Spring Data JPA с примерами кода. Узнайте, как получить разбитые на страницы и отсортированные результаты, используя интерфейс Springs PagingAndSortingRepository.
+                          1 Обзор
+                          При работе с большим количеством данных ленивая обработка часто необходима. Даже если сервис возвращает огромное количество данных, потребитель с меньшей вероятностью использует его. Рассмотрим торговый сайт, где покупатель ищет товар, а на сайте представлены тысячи товаров. Получение тысяч продуктов и их отображение на веб-странице займет очень много времени. В большинстве случаев клиент может даже не смотреть на все продукты.
+                          Для таких случаев используется метод, называемый пагинацией . Сначала отображается только небольшое подмножество продуктов (страница), и покупатель может попросить просмотреть следующее подмножество (страницу) и так далее. Это называется пагинацией."
+              - column:
+                  name: view_count
+                  value: "31"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "15"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "4"
+              - column:
+                  name: time
+                  value: "2021-02-11 03:05:00"
+              - column:
+                  name: title
+                  value: "Spring Data JPA @Query"
+              - column:
+                  name: text
+                  value: "1. Overview
+                          Spring Data provides many ways to define a query that we can execute. One of these is the @Query annotation.
+                          In this tutorial, we'll demonstrate how to use the @Query annotation in Spring Data JPA to execute both JPQL and native SQL queries.
+                          We'll also show how to build a dynamic query when the @Query annotation is not enough."
+              - column:
+                  name: view_count
+                  value: "32"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "16"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "3"
+              - column:
+                  name: time
+                  value: "2021-02-16 03:05:00"
+              - column:
+                  name: title
+                  value: "Spring Data JPA @Query"
+              - column:
+                  name: text
+                  value: "1. Overview
+                                  Spring Data provides many ways to define a query that we can execute. One of these is the @Query annotation.
+                                  In this tutorial, we'll demonstrate how to use the @Query annotation in Spring Data JPA to execute both JPQL and native SQL queries.
+                                  We'll also show how to build a dynamic query when the @Query annotation is not enough."
+              - column:
+                  name: view_count
+                  value: "32"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "17"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "10"
+              - column:
+                  name: user_id
+                  value: "12"
+              - column:
+                  name: time
+                  value: "2021-03-25 03:05:00"
+              - column:
+                  name: title
+                  value: "Валидация DTO в Spring Boot"
+              - column:
+                  name: text
+                  value: "Во многих веб-приложениях есть формы, на которых пользователь вводит данные (например, форма регистрации на сайте). Почти всегда нужно проводить валидацию этих данных: заполнены ли обязательные поля, записан ли email и телефон в нужном формате и так далее.
+                  В первую очередь валидация выполняется на фронтенде, однако при желании подкованный пользователь может её обойти и послать запрос с невалидными данными. Таким образом бэкенд не может быть уверен в корректности данных, полученных от пользователя. Соответственно необходимо валидировать данные на бэкенде.
+                  В данной статье будет рассмотрена валидация полей ДТО (DTO – Data Transfer Object) с использованием пакета javax.validation."
+              - column:
+                  name: view_count
+                  value: "12"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "18"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "10"
+              - column:
+                  name: user_id
+                  value: "7"
+              - column:
+                  name: time
+                  value: "2021-03-27 03:05:00"
+              - column:
+                  name: title
+                  value: "Роскомнадзор потребовал от Facebook, Twitter и Google информацию о локализации в РФ баз данных российских пользователей"
+              - column:
+                  name: text
+                  value: "8 апреля 2021 года Роскомнадзор сообщил, что ведомство потребовало от компаний Facebook, Twitter и Google предоставить информацию о локализации в России баз данных российских пользователей своих сервисов. В случае непредоставления правильного ответа регулятор собирается повторно привлечь эти платформы к административному наказанию за невыполнение законодательства РФ.
+                  Требование о локализации баз с персональными данными российских граждан на территории Российской Федерации содержатся в ФЗ-152 «О персональных данных». В случае их невыполнения компания может быть оштрафована на сумму от 2 до 6 млн рублей. За повторное нарушение законодательства штраф существенно увеличивается и может составить от 6 до 18 млн рублей.
+                  В 2020 году РКН через суд смог добиться штрафов для Facebook и Twitter. Причем Twitter до сих пор не оплатила штраф в 4 млн рублей, а Facebook наоборот его закрыла вовремя. Однако, ни одна из компаний до сих пор не озаботилась локализацией баз данных граждан РФ, а также не открыла местное представительство.
+                  В России уже есть прецеденты, когда иностранная компания отказалась исполнять требования РКН и российского законодательства в сфере защиты персональных данных пользователей. В 2016 году за это была заблокирована LinkedIn."
+              - column:
+                  name: view_count
+                  value: "22"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "19"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "10"
+              - column:
+                  name: user_id
+                  value: "6"
+              - column:
+                  name: time
+                  value: "2021-03-28 03:05:00"
+              - column:
+                  name: title
+                  value: "Уважаемые рекрутеры, а вы не офигели?"
+              - column:
+                  name: text
+                  value: "Ловите мое никому неинтересное мнение по поводу проблемы, от которой у меня уже знатно подгорает.
+                  Нахожусь в поиске работы. Но думаю свое резюме убрать с сайта соискателей, ибо достало.
+                  99% моего времени отнимает прочтение рекрутерского спама, ответы на по определению неподходящие вакансии и прохождение технических интервью, в которых я не пройду, потому что у меня ИЗНАЧАЛЬНО нерелевантный опыт.
+                  Я, как любой перфекционист, решила, что проблема, наверное, в резюме. Написала большими буквами, что НЕ РАБОТАЮ с определенными технологиями и НЕ ИНТЕРЕСУЮСЬ развитием в этом направлении. Написала, в какую сторону хочу развиваться. Исключила любые двусмысленности, убрала теги, которые могут хотя бы намекнуть на релевантный опыт.
+                  И что вы думаете? Нерелевантных писем стало еще больше!"
+              - column:
+                  name: view_count
+                  value: "2"
+        - insert:
+            tableName: posts
+            columns:
+              - column:
+                  name: id
+                  value: "20"
+              - column:
+                  name: is_active
+                  value: "1"
+              - column:
+                  name: moderation_status
+                  value: "ACCEPTED"
+              - column:
+                  name: moderator_id
+                  value: "10"
+              - column:
+                  name: user_id
+                  value: "5"
+              - column:
+                  name: time
+                  value: "2021-04-05 03:05:00"
+              - column:
+                  name: title
+                  value: "Наперегонки с будущим: коллекция хабрапостов о нестандартных подходах в современной разработке"
+              - column:
+                  name: text
+                  value: "Современный мир полон удивительных, порой пугающих технологий. Иногда кажется, что мы уже живём в предсказанном классиками научной фантастики антиутопичном техногенном будущем.
+                  Но если рядовой житель Земли боится восстания нейросетей и тотальной слежки за информацией, то у разработчика страхи совсем другие. Новые технологии — новые вызовы. Как со всем этим работать? Пользоваться только хорошо известными наработками профессионалов? Или искать иные пути?
+                  Мы за второй подход. И эта коллекция — как раз о необычных путях и хитростях в современной разработке. Читай, учись — и не бойся инноваций."
+              - column:
+                  name: view_count
+                  value: "2"
+  - changeSet:
+      id: 1616132814259-16
+      author: olegprokhorov (generated)
+      comment: "post_comments"
+      changes:
+        - insert:
+            tableName: post_comments
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: parent_id
+                  value: "NULL"
+              - column:
+                  name: post_id
+                  value: "1"
+              - column:
+                  name: user_id
+                  value: "1"
+              - column:
+                  name: time
+                  value: "2021-03-10 10:30:10"
+              - column:
+                  name: text
+                  value: "blablablablablaaaaa"
+        - insert:
+            tableName: post_comments
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: parent_id
+                  value: "NULL"
+              - column:
+                  name: post_id
+                  value: "3"
+              - column:
+                  name: user_id
+                  value: "4"
+              - column:
+                  name: time
+                  value: "2021-03-11 20:30:10"
+              - column:
+                  name: text
+                  value: "неубедительно"
+        - insert:
+            tableName: post_comments
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: parent_id
+                  value: "NULL"
+              - column:
+                  name: post_id
+                  value: "4"
+              - column:
+                  name: user_id
+                  value: "3"
+              - column:
+                  name: time
+                  value: "2021-03-10 10:34:10"
+              - column:
+                  name: text
+                  value: "аналогично"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
