@@ -35,7 +35,7 @@ blog.lifeTimeCaptchaCode: 1800
 blog.myEmail: test.diplom.blog@gmail.com
 blog.myPassword: 01012000test
 blog.address: http://localhost:8080/login/change-password/
-
+#Cloudinary
 blog.cloud_name: dsnia8hfx
 blog.api_key: '567365452572383'
 blog.api_secret: 6_-E13f997sdsvq7F4oykc9DnEE
