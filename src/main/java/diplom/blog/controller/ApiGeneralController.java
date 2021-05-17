@@ -43,6 +43,7 @@ public class ApiGeneralController {
         this.profileService = profileService;
     }
 
+
     @GetMapping("/settings")
     public SettingsResponse settings() {
         return settingsService.getGlobalSettings();
@@ -72,7 +73,7 @@ public class ApiGeneralController {
     }
 
     @PostMapping("/moderation")
-    public ResponseEntity<ModerationResponse> moderation(@RequestBody ModerationRequest moderationRequest
+    public ResponseEntity<ResultResponse> moderation(@RequestBody ModerationRequest moderationRequest
             , Principal principal) {
         return postService.moderation(moderationRequest, principal);
     }

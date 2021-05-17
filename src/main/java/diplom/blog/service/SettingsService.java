@@ -28,6 +28,7 @@ public class SettingsService {
 
     public SettingsResponse getGlobalSettings() {
         var settingsResponse = new SettingsResponse();
+
         List<GlobalSettings> gs = settingsRepository.findAll();
 
 

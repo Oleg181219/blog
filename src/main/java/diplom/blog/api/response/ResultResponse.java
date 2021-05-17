@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ResultResponse {
+
     private Boolean result;
 
     public Boolean getResult() {

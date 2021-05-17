@@ -484,12 +484,12 @@ public class PostService {
 
 //=================================================================================
 
-    public ResponseEntity<ModerationResponse> moderation(ModerationRequest moderationRequest
+    public ResponseEntity<ResultResponse> moderation(ModerationRequest moderationRequest
             , Principal principal) {
-        var moderationResponse = new ModerationResponse();
+        var resultResponse = new ResultResponse();
 
-        var a = new ArrayList();
-        if(principal == null){
+
+        if (principal == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         var moderator = userRepository.findByEmail(principal.getName());
@@ -509,9 +509,9 @@ public class PostService {
                 default:
                     break;
             }
-            moderationResponse.setRezult(true);
+            resultResponse.setResult(true);
         }
-        return ResponseEntity.ok(moderationResponse);
+        return ResponseEntity.ok(resultResponse);
     }
 
 //=================================================================================
@@ -523,7 +523,7 @@ public class PostService {
         }
 
         var successfullyCommentResponse = new SuccessfullyCommentResponse();
-        var unsuccessfullyCommentResponse = new UnsuccessfullyCommentResponse();
+        var errorResponse = new ErrorResponse();
         HashMap<String, String> errors = new HashMap<>();
 
 
@@ -540,9 +540,9 @@ public class PostService {
 
         if (text.length() <= 10) {
             errors.put("text", "Текст комментария не задан или слишком короткий");
-            unsuccessfullyCommentResponse.setErrors(errors);
-            unsuccessfullyCommentResponse.setResult(false);
-            return ResponseEntity.ok(unsuccessfullyCommentResponse);
+            errorResponse.setErrors(errors);
+            errorResponse.setResult(false);
+            return ResponseEntity.ok(errorResponse);
 
         } else {
             var postComment = new PostComment();
