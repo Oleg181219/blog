@@ -43,9 +43,7 @@ public class User implements Serializable {
     @Column(name = "photo")
     private String photo;
 
-    public Role getRole(){
-        return isModerator ==  1 ? Role.MODDERATOR : Role.USER;
-    }
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts = new HashSet<>();
@@ -112,6 +110,10 @@ public class User implements Serializable {
 
 //
 
+
+    public Role getRole(){
+        return isModerator ==  1 ? Role.MODDERATOR : Role.USER;
+    }
 
     public String getPhoto() {
         return photo;

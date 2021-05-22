@@ -31,21 +31,22 @@ public class SettingsService {
 
         List<GlobalSettings> gs = settingsRepository.findAll();
 
+        for (GlobalSettings settings : gs) {
 
-        if (gs.get(0).getValue().equals("YES")) {
-            settingsResponse.setMultyuserMode(true);
-        } else if (gs.get(0).getValue().equals("NO")) {
-            settingsResponse.setMultyuserMode(false);
-        }
-        if (gs.get(1).getValue().equals("YES")) {
-            settingsResponse.setPostPremoderation(true);
-        } else if (gs.get(1).getValue().equals("NO")) {
-            settingsResponse.setPostPremoderation(false);
-        }
-        if (gs.get(2).getValue().equals("YES")) {
-            settingsResponse.setStatisticsIsPublic(true);
-        } else if (gs.get(2).getValue().equals("NO")) {
-            settingsResponse.setStatisticsIsPublic(false);
+            switch (settings.getCode()) {
+                case ("MULTIUSER_MODE"):
+                    settingsResponse.setMultyuserMode(settings.getValue().equals("YES"));
+                    break;
+                case ("POST_PREMODERATION"):
+                    settingsResponse.setPostPremoderation(settings.getValue().equals("YES"));
+                    break;
+                case ("STATISTICS_IS_PUBLIC"):
+                    settingsResponse.setStatisticsIsPublic(settings.getValue().equals("YES"));
+                    break;
+                default:
+                    break;
+            }
+
         }
 
         return settingsResponse;

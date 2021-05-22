@@ -8,13 +8,13 @@ import diplom.blog.repo.PostVotesRepository;
 import diplom.blog.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.Comparator;
 
-@Component
+@Service
 public class StatisticsService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;

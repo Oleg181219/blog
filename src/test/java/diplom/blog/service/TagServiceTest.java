@@ -1,20 +1,13 @@
 package diplom.blog.service;
 
-import diplom.blog.repo.PostRepository;
-import diplom.blog.repo.TagsRepository;
-import org.junit.jupiter.api.Test;
+import diplom.blog.TestConfiguration.TagServiceTestConfiguration;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
-class TagServiceTest {
-
-    private TagsRepository tagsRepository;
-    private PostRepository postRepository;
-
-    private TagService tagService;
-
-
-
-    @Test
-    void getTags() {
-
-    }
+@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = TagServiceTestConfiguration.class)
+public class TagServiceTest {
 }

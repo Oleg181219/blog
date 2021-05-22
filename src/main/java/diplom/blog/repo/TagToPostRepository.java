@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface TagToPostRepository extends JpaRepository<TagToPost, Integer> {
     List<TagToPost> findAll();
+
 }

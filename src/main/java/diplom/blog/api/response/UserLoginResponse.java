@@ -1,10 +1,8 @@
 package diplom.blog.api.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.stereotype.Component;
 
 @Component
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserLoginResponse {
     private Long id;
     private String name;

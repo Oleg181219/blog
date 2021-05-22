@@ -6,16 +6,17 @@ import diplom.blog.model.Post;
 import diplom.blog.model.Tag;
 import diplom.blog.repo.PostRepository;
 import diplom.blog.repo.TagsRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Component
+@Service
 public class TagService {
     private final TagsRepository tagsRepository;
     private final PostRepository postRepository;
 
-
+    @Autowired
     public TagService(TagsRepository tagsRepository
             , PostRepository postRepository) {
         this.tagsRepository = tagsRepository;
@@ -54,8 +55,6 @@ public class TagService {
         tagResponse.setTags(respTags);
         return tagResponse;
     }
-
-
 }
 
 

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import java.util.Date;
 import java.util.List;
 
@@ -75,9 +76,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "GROUP BY p.id")
     List<Post> findAllByCalendar();
 
+
+
     @Query("SELECT p " +
-            "FROM Post p " +
-            "WHERE p.isActive = 1 AND p.moderationStatus = 'ACCEPTED' AND DATE_FORMAT(p.time, '%Y-%m-%d') = str(:date_requested)")
+            "from Post p " +
+            "where p.isActive = 1 and p.moderationStatus = 'ACCEPTED' " +
+            "AND p.time <= CURRENT_TIMESTAMP " +
+            "AND DATE_FORMAT ( p.time, '%Y-%m-%d' ) = str(:date_requested) ")
     Page<Post> findPostsByDate(Pageable page, @Param("date_requested") String dateRequested);
 
     @Query("select p from Post p " +
@@ -131,14 +136,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllPostsByModerationStatus(Pageable pageable, @Param("status") Enum<ModerationStatus> status);
 
 
-
     @Query("SELECT p " +
             "FROM Post p " +
             "LEFT JOIN User u ON u.id=p.user.id " +
             "LEFT JOIN PostComment pc ON p.id = pc.post.id " +
             "LEFT JOIN PostVotes pv ON p.id = pv.post.id " +
             "WHERE p.isActive = :isActive " +
-            "AND p.user.id = :id "+
+            "AND p.user.id = :id " +
             "GROUP BY p.id ORDER BY p.time desc ")
     Page<Post> findAllMyPostInactive(Pageable pageable, @Param("isActive") Integer isActive, @Param("id") int id);
 
@@ -149,7 +153,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "LEFT JOIN PostVotes pv ON p.id = pv.post.id " +
             "WHERE p.isActive = 1 " +
             "AND p.moderationStatus = :status " +
-            "AND p.user.id = :id "+
+            "AND p.user.id = :id " +
             "GROUP BY p.id ORDER BY p.time desc ")
     Page<Post> findAllMyPostIsActive(Pageable pageable, @Param("status") Enum<ModerationStatus> status, @Param("id") int id);
 

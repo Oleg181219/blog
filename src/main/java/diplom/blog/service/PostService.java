@@ -5,9 +5,9 @@ import diplom.blog.api.request.ModerationRequest;
 import diplom.blog.api.request.NewPostRequest;
 import diplom.blog.api.request.PostVotesRequest;
 import diplom.blog.api.response.*;
-import diplom.blog.model.*;
 import diplom.blog.model.DtoModel.*;
 import diplom.blog.model.Enum.ModerationStatus;
+import diplom.blog.model.*;
 import diplom.blog.repo.*;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Component
+@Service
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -62,7 +62,7 @@ public class PostService {
         switch (mode) {
             case "popular":
                 allPosts = postRepository.findPostsOrderByPostComments(PageRequest.of(offset / limit, limit));
-                countPosts = Math.toIntExact(allPosts.getTotalElements());
+                countPosts = (int)allPosts.getTotalElements();
                 for (Post allPost : allPosts) {
                     PostDTO newRespPost = createNewResponsePosts(allPost);
                     if (!postsList.contains(newRespPost)) {
@@ -72,9 +72,8 @@ public class PostService {
                 break;
             case "best":
                 allPosts = postRepository.findPostsOrderByLikeCount(PageRequest.of(offset / limit, limit));
-                countPosts = Math.toIntExact(allPosts.getTotalElements());
+                countPosts = (int) (allPosts.getTotalElements());
                 for (Post allPost : allPosts) {
-
                     PostDTO newRespPost = createNewResponsePosts(allPost);
                     if (!postsList.contains(newRespPost)) {
                         postsList.add(newRespPost);
@@ -150,7 +149,7 @@ public class PostService {
                 }
             }
         }
-
+        Collections.sort(years);
         calendarResponse.setYears(years);
         calendarResponse.setPosts(posts);
         return calendarResponse;
@@ -626,7 +625,7 @@ public class PostService {
         postDTO.setTitle(post.getTitle());
         String plainText = Jsoup.parse(post.getText()).text();
         if (plainText.length() > 150) {
-            String temp = (plainText.substring(0, 150));
+            var temp = (plainText.substring(0, 150));
             postDTO.setAnnounce(temp.substring(0, temp.lastIndexOf(" ")) + "...");
         } else {
             postDTO.setAnnounce(plainText + "...");

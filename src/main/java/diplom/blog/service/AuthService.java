@@ -27,7 +27,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
 import java.awt.*;
@@ -37,7 +38,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 
-@Component
+@Service
 public class AuthService {
 
     private final GlobalSettingsRepository globalSettingsRepository;
@@ -54,6 +55,7 @@ public class AuthService {
     private Cage cage;
     private StringBuilder secretCode;
     private StringBuilder captchaBaseCode;
+
 
     public AuthService(GlobalSettingsRepository globalSettingsRepository
             , AuthenticationManager authenticationManager
@@ -187,8 +189,6 @@ public class AuthService {
                 if (user.getCode().length() > 44) {
                     if (user.getCode().substring(0, 45).equals(authPasswordRequest.getCode())) {
                         userId = user.getId();
-                        System.out.println(Long.parseLong(user.getCode().substring(45)));
-                        System.out.println(new Date().getTime());
                         if (new Date().getTime() - Long.parseLong(user.getCode().substring(45)) > 3600000L) {
                             errors.put("code", "Ссылка для восстановления пароля устарела. <a href=\"/auth/restore\">Запросить ссылку снова</a>");
                         }
@@ -211,7 +211,7 @@ public class AuthService {
             return ResponseEntity.ok(authResponse);
         }
 
-        System.out.println(userId);
+
         var user = userRepository.findById(userId);
         user.setPassword(passwordEncoder().encode(authPasswordRequest.getPassword()));
         userRepository.save(user);
@@ -248,7 +248,7 @@ public class AuthService {
         }
         int captchaLength = 4 + (int) (Math.random() * 2);
         while (captchaBuffer.length() < captchaLength) {
-            String captcha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            var captcha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
             int index = (int) (random.nextFloat() * captcha.length());
             captchaBuffer.append(captcha.charAt(index));
         }

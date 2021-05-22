@@ -6,6 +6,7 @@ import diplom.blog.api.request.MyProfileRequest;
 import diplom.blog.api.request.SettingRequest;
 import diplom.blog.api.response.*;
 import diplom.blog.service.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,67 +44,107 @@ public class ApiGeneralController {
         this.profileService = profileService;
     }
 
-
+    /**
+     * Получение настроек
+     */
     @GetMapping("/settings")
+    @ApiOperation(value = "Получение настроек")
     public SettingsResponse settings() {
         return settingsService.getGlobalSettings();
-
     }
 
+    /**
+     * Сохранение настроек
+     */
     @PutMapping("/settings")
+    @ApiOperation(value = "Сохранение настроек")
     public SettingsResponse setSettings(@RequestBody SettingRequest settingRequest
             , Principal principal) {
         return settingsService.setGlobalSettings(settingRequest, principal);
-
     }
 
+    /**
+     * Общие данные блога
+     */
     @GetMapping("/init")
+    @ApiOperation(value = "Общие данные блога")
     public InitResponse init() {
         return initResponse;
     }
 
+    /**
+     * Получение списка тэгов
+     */
     @GetMapping("/tag")
+    @ApiOperation(value = "Получение списка тэгов")
     public TagResponse tag(@RequestParam(required = false) String query) {
         return tagService.getTags(query);
     }
 
+    /**
+     * Календарь (количества публикаций)
+     */
     @GetMapping("/calendar")
+    @ApiOperation(value = "Календарь (количества публикаций)")
     public CalendarResponse calendar() {
         return postService.calendar();
     }
 
+    /**
+     * Получение списков постов на модерацию
+     */
     @PostMapping("/moderation")
+    @ApiOperation(value = "Получение списков постов на модерацию")
     public ResponseEntity<ResultResponse> moderation(@RequestBody ModerationRequest moderationRequest
             , Principal principal) {
         return postService.moderation(moderationRequest, principal);
     }
 
+    /**
+     * Отправка комментария к посту
+     */
     @PostMapping("/comment")
+    @ApiOperation(value = "Отправка комментария к посту")
     public ResponseEntity<?> comment(@RequestBody CommentRequest commentRequest, Principal principal) {
         return postService.comment(commentRequest, principal);
     }
 
+    /**
+     * Моя статистика
+     */
     @GetMapping("/statistics/my")
+    @ApiOperation(value = "Моя статистика")
     public StatisticResponse myStatistic(Principal principal) {
         return statisticsService.myStatistics(principal);
     }
 
+    /**
+     * Статистика по всему блогу
+     */
     @GetMapping("/statistics/all")
+    @ApiOperation(value = "Статистика по всему блогу")
     public StatisticResponse allStatistic(Principal principal) {
         return statisticsService.allStatistics(principal);
     }
 
+    /**
+     * Загрузка изображений
+     */
     @PostMapping(value = "/image")
+    @ApiOperation(value = "Загрузка изображений")
     public ResponseEntity<?> uploadImage(HttpServletRequest request,
                                          @RequestParam("image") MultipartFile image,
-                                         Principal principal) throws IOException {
-
+                                         Principal principal)  {
         return ResponseEntity.ok(storageService.store(request, image, principal));
     }
 
+    /**
+     * Редактирование моего профиля
+     */
     @PostMapping(value = "/profile/my",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Редактирование моего профиля")
     public ResponseEntity<?> updateProfileWithPhoto(@RequestParam(value = "photo") MultipartFile photo,
                                                     @RequestParam(value = "name", required = false) String name,
                                                     @RequestParam(value = "email", required = false) String email,
@@ -112,10 +153,13 @@ public class ApiGeneralController {
         return profileService.profileMy(photo, name, email, password, principal);
     }
 
-
+    /**
+     * Редактирование моего профиля
+     */
     @PostMapping(value = "/profile/my",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Редактирование моего профиля")
     public ResponseEntity<?> updateProfileWithOutPhoto(@RequestBody MyProfileRequest myProfileRequest,
                                                        Principal principal) {
         return profileService.profileMyWithoutFoto(myProfileRequest, principal);

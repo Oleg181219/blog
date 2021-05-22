@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,7 +22,7 @@ import java.util.List;
 
 import static java.awt.Image.SCALE_DEFAULT;
 
-@Component
+@Service
 public class ProfileService {
     private final FileSystemStorageService fileSystemStorageService;
     private final UserRepository userRepository;
@@ -39,7 +39,7 @@ public class ProfileService {
                                        String email,
                                        String password,
                                        Principal principal) throws IOException {
-        ErrorResponse errorResponse = new ErrorResponse();
+        var errorResponse = new ErrorResponse();
         var error = new HashMap<String, String>();
         if (principal == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -49,7 +49,7 @@ public class ProfileService {
         if (photo.getSize() > 5242880) {
             error.put("photo", "Фото слишком большое, нужно не более 5 Мб");
         } else {
-            BufferedImage bufferedImage = ImageIO.read(photo.getInputStream());
+            var bufferedImage = ImageIO.read(photo.getInputStream());
             var ant = bufferedImage.getScaledInstance(36, 36, SCALE_DEFAULT);
             var fileName = photo.getOriginalFilename();
             user.setPhoto(fileSystemStorageService.cloudStore(principal, ant, fileName));
@@ -97,7 +97,7 @@ public class ProfileService {
 
     public ResponseEntity<?> profileMyWithoutFoto(MyProfileRequest myProfileRequest,
                                                   Principal principal) {
-        ErrorResponse errorResponse = new ErrorResponse();
+        var errorResponse = new ErrorResponse();
         var resultResponse = new ResultResponse();
         var error = new HashMap<String, String>();
 
