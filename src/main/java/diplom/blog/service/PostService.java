@@ -54,56 +54,28 @@ public class PostService {
     SimpleDateFormat formaterYear = new SimpleDateFormat("yyyy");
 
     public AllPostResponse allPost(int offset, int limit, String mode) {
-        ArrayList<PostDTO> postsList = new ArrayList<>();
         Page<Post> allPosts;
         var allPostResponse = new AllPostResponse();
 
-        int countPosts;
         switch (mode) {
             case "popular":
                 allPosts = postRepository.findPostsOrderByPostComments(PageRequest.of(offset / limit, limit));
-                countPosts = (int)allPosts.getTotalElements();
-                for (Post allPost : allPosts) {
-                    PostDTO newRespPost = createNewResponsePosts(allPost);
-                    if (!postsList.contains(newRespPost)) {
-                        postsList.add(newRespPost);
-                    }
-                }
                 break;
             case "best":
                 allPosts = postRepository.findPostsOrderByLikeCount(PageRequest.of(offset / limit, limit));
-                countPosts = (int) (allPosts.getTotalElements());
-                for (Post allPost : allPosts) {
-                    PostDTO newRespPost = createNewResponsePosts(allPost);
-                    if (!postsList.contains(newRespPost)) {
-                        postsList.add(newRespPost);
-                    }
-                }
+                allPostResponse.setPosts(createResponseList(allPosts));
                 break;
             case "early":
                 allPosts = postRepository.findPostsOrderByTimeIncrease(PageRequest.of(offset / limit, limit));
-                countPosts = Math.toIntExact(allPosts.getTotalElements());
-                for (Post allPost : allPosts) {
-
-                    PostDTO newRespPost = createNewResponsePosts(allPost);
-                    if (!postsList.contains(newRespPost)) {
-                        postsList.add(newRespPost);
-                    }
-                }
+                allPostResponse.setPosts(createResponseList(allPosts));
                 break;
             default:
                 allPosts = postRepository.findPostsOrderByTimeDesc(PageRequest.of(offset / limit, limit));
-                countPosts = Math.toIntExact(allPosts.getTotalElements());
-                for (Post allPost : allPosts) {
-                    PostDTO newRespPost = createNewResponsePosts(allPost);
-                    if (!postsList.contains(newRespPost)) {
-                        postsList.add(newRespPost);
-                    }
-                }
+                allPostResponse.setPosts(createResponseList(allPosts));
                 break;
         }
-        allPostResponse.setCount(countPosts);
-        allPostResponse.setPosts(postsList);
+
+        allPostResponse.setCount(Math.toIntExact(allPosts.getTotalElements()));
         return allPostResponse;
     }
 
@@ -199,11 +171,14 @@ public class PostService {
 
     //=================================================================================
     public PostByIdDTO findPostById(long id, Principal principal) {
+
+
         var postByIdDTO = new PostByIdDTO();
         var userDTO = new UserDTO();
         ArrayList<String> tagPostByIdDTO = new ArrayList<>();
         ArrayList<CommentDTO> comments = new ArrayList<>();
         Post post;
+
         if (principal == null) {
             post = postRepository.findById(id);
         } else {
@@ -610,6 +585,18 @@ public class PostService {
             }
         }
         return response;
+    }
+
+    //=================================================================================
+    private ArrayList<PostDTO> createResponseList(Page<Post> allPosts) {
+        ArrayList<PostDTO> postsList = new ArrayList<>();
+        for (Post allPost : allPosts) {
+            PostDTO newRespPost = createNewResponsePosts(allPost);
+            if (!postsList.contains(newRespPost)) {
+                postsList.add(newRespPost);
+            }
+        }
+        return postsList;
     }
 
 //=================================================================================

@@ -44,10 +44,9 @@ public class User implements Serializable {
     private String photo;
 
 
-
+//------------------------
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts = new HashSet<>();
-
 
     public Set<Post> getPosts() {
         return posts;
@@ -65,7 +64,7 @@ public class User implements Serializable {
     public void setPosts(Set<Post> posts) {
         this.posts = posts;
     }
-
+//------------------------------------
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostVotes> postVotes = new HashSet<>();
 

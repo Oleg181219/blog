@@ -115,6 +115,10 @@ public class Post implements Serializable {
     public Post() {
     }
 
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
     public Post(Long id,
                 int isActive,
                 ModerationStatus moderationStatus,
@@ -133,10 +137,6 @@ public class Post implements Serializable {
         this.title = title;
         this.text = text;
         this.viewCount = viewCount;
-    }
-
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
     }
 
     public Long getId() {
