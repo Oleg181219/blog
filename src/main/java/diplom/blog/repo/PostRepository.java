@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -106,13 +107,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Post findById(long id);
 
 
-    @Query("SELECT p " +
+    @Query("SELECT COUNT (p) " +
             "FROM Post p " +
-            "LEFT JOIN User u ON u.id = p.user.id " +
-            "LEFT JOIN PostComment pc ON p.id = pc.post.id " +
-            "LEFT JOIN PostVotes pvl ON (p.id = pc.post.id and pvl.value = 1) " +
             "WHERE (p.moderationStatus = 'NEW')")
-    List<Post> findAllByModerationStatus();
+    int findAllByModerationStatus();
 
     @Query("SELECT p " +
             "FROM Post p " +
@@ -187,7 +185,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "LEFT JOIN PostVotes pv ON pv.post.id = p.id " +
             "WHERE p.user.email = :email")
     List<Post> findAlPostVotesByUserEmail(@Param("email") String email);
-
 
 
 

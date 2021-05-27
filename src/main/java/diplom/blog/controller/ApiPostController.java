@@ -8,6 +8,7 @@ import diplom.blog.api.response.ResultResponse;
 import diplom.blog.model.DtoModel.PostByIdDTO;
 import diplom.blog.service.PostService;
 import io.swagger.annotations.ApiOperation;
+import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class ApiPostController {
     @ApiOperation(value = "Список постов")
     public AllPostResponse posts(@RequestParam("mode") String mode,
                                  @RequestParam("offset") int offset,
-                                 @RequestParam("limit") int limit) {
+                                 @RequestParam("limit") int limit) throws NotFoundException {
         return postService.allPost(offset, limit, mode);
     }
 

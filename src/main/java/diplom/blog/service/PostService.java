@@ -9,6 +9,7 @@ import diplom.blog.model.DtoModel.*;
 import diplom.blog.model.Enum.ModerationStatus;
 import diplom.blog.model.*;
 import diplom.blog.repo.*;
+import javassist.NotFoundException;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -53,9 +54,10 @@ public class PostService {
     SimpleDateFormat formaterPostDate = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formaterYear = new SimpleDateFormat("yyyy");
 
-    public AllPostResponse allPost(int offset, int limit, String mode) {
+    public AllPostResponse allPost(int offset, int limit, String mode) throws NotFoundException {
         Page<Post> allPosts;
         var allPostResponse = new AllPostResponse();
+
 
         switch (mode) {
             case "popular":
@@ -350,6 +352,7 @@ public class PostService {
         if (principal == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
         }
+
         ErrorResponse errorResponse;
         HashMap<String, String> errors;
 

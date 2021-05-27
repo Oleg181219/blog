@@ -110,12 +110,21 @@ public class AuthService {
 
     //=================================================================================
     public ResponseEntity<LoginResponse> login(LoginRequest loginRequest) {
+        var curentUser = userRepository.findByEmail(loginRequest.getEmail());
+        if (curentUser == null) {
+            LoginResponse loginResponse = new LoginResponse();
+            loginResponse.setResult(false);
+            return ResponseEntity.ok(loginResponse);
+        }
+
         var authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail()
                         , loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        var user = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-        return ResponseEntity.ok(getLoginResponse(user.getUsername()));
+//        var user = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+
+
+        return ResponseEntity.ok(getLoginResponse(curentUser));
     }
 
     //=================================================================================
@@ -128,7 +137,8 @@ public class AuthService {
 
     //=================================================================================
     public ResponseEntity<LoginResponse> check(Principal principal) {
-        return ResponseEntity.ok(getLoginResponse(principal.getName()));
+        var curentUser = userRepository.findByEmail(principal.getName());
+        return ResponseEntity.ok(getLoginResponse(curentUser));
     }
 
     //=================================================================================
@@ -136,7 +146,6 @@ public class AuthService {
         cage = new YCage();
         var dateForComparisons = new Date(new Date().getTime() - (Long.parseLong(lifeTimeCaptchaCodeString) * 1000));
         captchaCodesRepository.deleteAllByTimeBefore(dateForComparisons);
-
         BufferedImage image = cage.drawImage(generateCaptcha());
         captchaBaseCode.append(createCaptchaString(image));
         captchaCodesRepository.save(new CaptchaCode(new Date(), captchaBaseCode.toString(), secretCode.toString()));
@@ -272,27 +281,22 @@ public class AuthService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return Base64.getEncoder().encodeToString(bytes);
     }
 
-    private LoginResponse getLoginResponse(String email) {
-        var curentUser = userRepository.findByEmail(email);
+    private LoginResponse getLoginResponse(User curentUser) {
 
         var userLoginResponse = new UserLoginResponse();
-
         userLoginResponse.setEmail(curentUser.getEmail());
-
         userLoginResponse.setModeration(curentUser.getIsModerator() == 1);
-
-        int newPosts = postRepository.findAllByModerationStatus().size();
-        userLoginResponse.setModerationCount(curentUser.getIsModerator() == 1 ? newPosts : 0);
+        userLoginResponse.setModerationCount(curentUser.getIsModerator() == 1 ? postRepository.findAllByModerationStatus() : 0);
         userLoginResponse.setId((long) curentUser.getId());
         userLoginResponse.setName(curentUser.getName());
         userLoginResponse.setPhoto(curentUser.getPhoto());
-        userLoginResponse.setSettings(Objects.equals(globalSettingsRepository.getGlobalSettingsById(3L).getValue(), "YES"));
+        userLoginResponse.setSettings(curentUser.getIsModerator() == 1);
 
         var loginResponse = new LoginResponse();
+
         loginResponse.setResult(true);
         loginResponse.setUserLoginResponse(userLoginResponse);
 
