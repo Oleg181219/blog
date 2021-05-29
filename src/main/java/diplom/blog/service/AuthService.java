@@ -85,7 +85,7 @@ public class AuthService {
             respMap.put("name", "Имя указано неверно. ");
         }
         BufferedImage image = cage.drawImage(user.getCaptcha());
-        if (capCod.getCode().equals(createCaptchaString(image))) {
+        if (!capCod.getCode().equals(createCaptchaString(image))) {
             respMap.put("captcha", "Код с картинки введён неверно");
         }
         var authResponse = new AuthResponse();
@@ -121,9 +121,6 @@ public class AuthService {
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail()
                         , loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-//        var user = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-
-
         return ResponseEntity.ok(getLoginResponse(curentUser));
     }
 

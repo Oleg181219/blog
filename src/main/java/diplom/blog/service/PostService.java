@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -235,9 +236,11 @@ public class PostService {
     public AllPostResponse moderation(int offset, int limit, String status, Principal principal) {
         ArrayList<PostDTO> postsList = new ArrayList<>();
         Page<Post> allPosts;
+        var nnn=  SecurityContextHolder.getContext().getAuthentication().getName();
         var allPostResponse = new AllPostResponse();
         var moder = userRepository.findByEmail(principal.getName());
         var countPosts = 0;
+
 
         if (moder.getIsModerator() == 1) {
 
@@ -394,7 +397,7 @@ public class PostService {
             return ResponseEntity.ok(errorResponse);
 
         }
-//        if
+
         errorResponse = new ErrorResponse();
         errors = new HashMap<>();
         if (postRequest.getTitle().length() < 3) {

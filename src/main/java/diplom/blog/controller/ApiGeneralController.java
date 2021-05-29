@@ -135,6 +135,7 @@ public class ApiGeneralController {
     public ResponseEntity<?> uploadImage(HttpServletRequest request,
                                          @RequestParam("image") MultipartFile image,
                                          Principal principal)  {
+
         return ResponseEntity.ok(storageService.store(request, image, principal));
     }
 

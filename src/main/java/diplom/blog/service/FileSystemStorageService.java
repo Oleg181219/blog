@@ -5,6 +5,7 @@ import com.cloudinary.utils.ObjectUtils;
 import diplom.blog.api.response.ErrorResponse;
 import diplom.blog.repo.UserRepository;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,10 +34,16 @@ public class FileSystemStorageService {
         this.userRepository = userRepository;
     }
 
+    @Value("${blog.cloud_name}")
+    private String CLOUD_NAME;
+    @Value("${blog.api_key}")
+    private String API_KEY;
+    @Value("${blog.api_secret}")
+    private String API_SECRET;
+
+
     public String cloudStore(Principal principal, Image photo, String name) throws IOException {
-        final var CLOUD_NAME = "dsnia8hfx";
-        final var API_KEY = "567365452572383";
-        final var API_SECRET = "6_-E13f997sdsvq7F4oykc9DnEE";
+
         var cloudinary = new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", CLOUD_NAME,
                 "api_key", API_KEY,
@@ -48,7 +55,7 @@ public class FileSystemStorageService {
                 "public_id", path,
                 "overwrite", true);
 
-       var qwer =  toBufferedImage(photo);
+        var qwer = toBufferedImage(photo);
 
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -60,7 +67,6 @@ public class FileSystemStorageService {
         var imageString = "data:image/png;base64," +
                 DatatypeConverter.printBase64Binary(baos.toByteArray());
         var upload = cloudinary.uploader().upload(imageString, params);
-
 
 
         return upload.get("url").toString();
@@ -99,7 +105,6 @@ public class FileSystemStorageService {
         String realPath = request.getServletContext().getRealPath(path);
 
 
-
         try {
             byte[] photo = image.getBytes();
 
@@ -128,10 +133,8 @@ public class FileSystemStorageService {
     }
 
 
-    private  BufferedImage toBufferedImage(Image img)
-    {
-        if (img instanceof BufferedImage)
-        {
+    private BufferedImage toBufferedImage(Image img) {
+        if (img instanceof BufferedImage) {
             return (BufferedImage) img;
         }
 
