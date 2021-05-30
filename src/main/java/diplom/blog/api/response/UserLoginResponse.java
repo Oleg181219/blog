@@ -1,7 +1,14 @@
 package diplom.blog.api.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Component
 public class UserLoginResponse {
     private Long id;
@@ -12,59 +19,4 @@ public class UserLoginResponse {
     private int moderationCount;
     private boolean settings;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean isModeration() {
-        return moderation;
-    }
-
-    public void setModeration(boolean moderation) {
-        this.moderation = moderation;
-    }
-
-    public int getModerationCount() {
-        return moderationCount;
-    }
-
-    public void setModerationCount(int moderationCount) {
-        this.moderationCount = moderationCount;
-    }
-
-    public boolean isSettings() {
-        return settings;
-    }
-
-    public void setSettings(boolean settings) {
-        this.settings = settings;
-    }
 }

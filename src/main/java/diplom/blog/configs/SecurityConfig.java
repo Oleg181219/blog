@@ -41,9 +41,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .logout().logoutSuccessUrl("http://localhost:8080/")
-                .permitAll();
-//                .and()
-//                .exceptionHandling().accessDeniedPage("/");
+                .permitAll()
+                .and()
+                .exceptionHandling().accessDeniedPage("/");
     }
 
     @Bean

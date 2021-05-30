@@ -1,26 +1,18 @@
 package diplom.blog.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.stereotype.Component;
 
+@Data
+@AllArgsConstructor
+@Component
 public class LoginResponse {
+
     private boolean result;
 
     @JsonProperty("user")
     private UserLoginResponse userLoginResponse;
 
-    public boolean isResult() {
-        return result;
-    }
-
-    public void setResult(boolean result) {
-        this.result = result;
-    }
-
-    public UserLoginResponse getUserLoginResponse() {
-        return userLoginResponse;
-    }
-
-    public void setUserLoginResponse(UserLoginResponse userLoginResponse) {
-        this.userLoginResponse = userLoginResponse;
-    }
 }
