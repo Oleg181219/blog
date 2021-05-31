@@ -11,7 +11,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Component
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CalendarResponse {
+public class CalendarResponse  implements Response{
 
     List<String> years;
 

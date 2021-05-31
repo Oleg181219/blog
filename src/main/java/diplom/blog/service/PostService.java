@@ -9,6 +9,7 @@ import diplom.blog.model.DtoModel.*;
 import diplom.blog.model.Enum.ModerationStatus;
 import diplom.blog.model.*;
 import diplom.blog.repo.*;
+import diplom.blog.util.AuthCheck;
 import javassist.NotFoundException;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,31 +35,32 @@ public class PostService {
     private final TagsRepository tagsRepository;
     private final PostCommentRepository postCommentRepository;
     private final PostVotesRepository postVotesRepository;
-    private final String UNAUTHORIZED = "UNAUTHORIZED";
+    private final AuthCheck authCheck;
 
 
     @Autowired
-    public PostService(PostRepository postRepository
-            , UserRepository userRepository
-            , TagToPostRepository tagToPostRepository
-            , TagsRepository tagsRepository
-            , PostCommentRepository postCommentRepository
-            , PostVotesRepository postVotesRepository) {
+    public PostService(PostRepository postRepository,
+                       UserRepository userRepository,
+                       TagToPostRepository tagToPostRepository,
+                       TagsRepository tagsRepository,
+                       PostCommentRepository postCommentRepository,
+                       PostVotesRepository postVotesRepository,
+                       AuthCheck authCheck) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.tagToPostRepository = tagToPostRepository;
         this.tagsRepository = tagsRepository;
         this.postCommentRepository = postCommentRepository;
         this.postVotesRepository = postVotesRepository;
+        this.authCheck = authCheck;
     }
 
     SimpleDateFormat formaterPostDate = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formaterYear = new SimpleDateFormat("yyyy");
 
-    public AllPostResponse allPost(int offset, int limit, String mode) throws NotFoundException {
+    public ResponseEntity<?> allPost(int offset, int limit, String mode) throws NotFoundException {
         Page<Post> allPosts;
         var allPostResponse = new AllPostResponse();
-
 
         switch (mode) {
             case "popular":
@@ -79,30 +81,24 @@ public class PostService {
         }
 
         allPostResponse.setCount(Math.toIntExact(allPosts.getTotalElements()));
-        return allPostResponse;
+        return ResponseEntity.ok(allPostResponse);
     }
 
     //=================================================================================
-    public AllPostResponse postsSearch(int offset, int limit, String query) {
+    public ResponseEntity<?> postsSearch(int offset, int limit, String query) {
         ArrayList<PostDTO> postsList = new ArrayList<>();
-        var allPostResponse = new AllPostResponse();
         int countPosts;
-
         Page<Post> allPosts = postRepository.findAllText(PageRequest.of(offset / limit, limit), query);
         countPosts = Math.toIntExact(allPosts.getTotalElements());
-
         for (Post post : allPosts) {
             postsList.add(createNewResponsePosts(post));
         }
-
-        allPostResponse.setCount(countPosts);
-        allPostResponse.setPosts(postsList);
-        return allPostResponse;
+        return ResponseEntity.ok(new AllPostResponse(countPosts, postsList));
     }
 //=================================================================================
 
-    public CalendarResponse calendar() {
-        var calendarResponse = new CalendarResponse();
+    public ResponseEntity<Response> calendar() {
+
         ArrayList<String> years = new ArrayList<>();
         HashMap<String, Integer> posts = new HashMap<>();
         List<Post> allPosts = postRepository.findAllByCalendar();
@@ -125,14 +121,13 @@ public class PostService {
             }
         }
         Collections.sort(years);
-        calendarResponse.setYears(years);
-        calendarResponse.setPosts(posts);
-        return calendarResponse;
+
+        return ResponseEntity.ok(new CalendarResponse(years, posts));
     }
 
     //=================================================================================
-    public AllPostResponse findPostsByDate(int offset, int limit, String date) {
-        var allPostResponse = new AllPostResponse();
+    public ResponseEntity<AllPostResponse> findPostsByDate(int offset, int limit, String date) {
+
         ArrayList<PostDTO> postsList = new ArrayList<>();
         Page<Post> allPosts = postRepository.findPostsByDate(PageRequest.of(offset / limit, limit), date);
 
@@ -146,19 +141,15 @@ public class PostService {
             }
         }
         if (postsList.isEmpty()) {
-            allPostResponse.setCount(0);
-            allPostResponse.setPosts(postsList);
-            return allPostResponse;
+            return ResponseEntity.ok(new AllPostResponse(0, postsList));
         }
-        allPostResponse.setCount(postsList.size());
-        allPostResponse.setPosts(postsList);
-        return allPostResponse;
+
+        return ResponseEntity.ok(new AllPostResponse(postsList.size(), postsList));
     }
 
     //=================================================================================
-    public AllPostResponse findPostsByTag(int offset, int limit, String tag) {
+    public ResponseEntity<AllPostResponse> findPostsByTag(int offset, int limit, String tag) {
         ArrayList<PostDTO> postsList = new ArrayList<>();
-        var allPostResponse = new AllPostResponse();
         int countPosts;
 
         Page<Post> allPosts = postRepository.findPostByTag(PageRequest.of(offset / limit, limit), tag);
@@ -167,13 +158,12 @@ public class PostService {
         for (Post post : allPosts) {
             postsList.add(createNewResponsePosts(post));
         }
-        allPostResponse.setCount(countPosts);
-        allPostResponse.setPosts(postsList);
-        return allPostResponse;
+
+        return ResponseEntity.ok(new AllPostResponse(countPosts, postsList));
     }
 
     //=================================================================================
-    public PostByIdDTO findPostById(long id, Principal principal) {
+    public ResponseEntity<PostByIdDTO> findPostById(long id) {
 
 
         var postByIdDTO = new PostByIdDTO();
@@ -182,13 +172,13 @@ public class PostService {
         ArrayList<CommentDTO> comments = new ArrayList<>();
         Post post;
 
-        if (principal == null) {
+        if (authCheck.securityCheck()) {
             post = postRepository.findById(id);
         } else {
             post = postRepository.findByIdAuth(id);
         }
         if (post == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
         }
         postByIdDTO.setId(post.getId());// id
         postByIdDTO.setTimestamp(post.getTime().getTime() / 1000);//timestamp
@@ -201,18 +191,19 @@ public class PostService {
         postByIdDTO.setLikeCount(post.getPostVotes().stream().filter(a -> a.getValue() == 1).count());//likes
         postByIdDTO.setDislikeCount(post.getPostVotes().stream().filter(a -> a.getValue() != 1).count());//dislikes
         int viewCount = post.getViewCount();
-        if (principal == null) {
+        if (!authCheck.securityCheck()) {
             viewCount++;
 
         } else {
-            if (!principal.getName().equals(post.getUser().getEmail()) &&
-                    userRepository.findByEmail(principal.getName()).getIsModerator() != 1) {
+
+            if (!(SecurityContextHolder.getContext().getAuthentication().getName()).equals(post.getUser().getEmail()) &&
+                    userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).getIsModerator() != 1) {
                 post.setViewCount(viewCount + 1);
                 postRepository.save(post);
             }
         }
         postByIdDTO.setViewCount(viewCount);
-        post.getPostComments().forEach(entry -> {//postComment start
+        post.getPostComments().forEach(entry -> {
             var userCommentDTO = new UserCommentDTO();
             var commentDTO = new CommentDTO();
             userCommentDTO.setId(entry.getUser().getId());
@@ -223,22 +214,25 @@ public class PostService {
             commentDTO.setText(entry.getText());
             commentDTO.setUser(userCommentDTO);
             comments.add(commentDTO);
-        });//postComment end
+        });
 
         comments.sort(Comparator.comparing(CommentDTO::getTimestamp).reversed());
-        postByIdDTO.setComments(comments);//PostComment
+        postByIdDTO.setComments(comments);
         post.getTags().forEach(entry -> tagPostByIdDTO.add(entry.getName()));
-        postByIdDTO.setTags(tagPostByIdDTO);//tags
-        return postByIdDTO;
+        postByIdDTO.setTags(tagPostByIdDTO);
+        return ResponseEntity.ok(postByIdDTO);
     }
 
     //=================================================================================
-    public AllPostResponse moderation(int offset, int limit, String status, Principal principal) {
+    public ResponseEntity<Response> moderation(int offset, int limit, String status, Principal principal) {
         ArrayList<PostDTO> postsList = new ArrayList<>();
         Page<Post> allPosts;
-        var nnn=  SecurityContextHolder.getContext().getAuthentication().getName();
-        var allPostResponse = new AllPostResponse();
-        var moder = userRepository.findByEmail(principal.getName());
+
+
+        var moder = userRepository.findByEmail(SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName());
         var countPosts = 0;
 
 
@@ -281,10 +275,8 @@ public class PostService {
                 default:
                     break;
             }
-            allPostResponse.setCount(countPosts);
-            allPostResponse.setPosts(postsList);
         }
-        return allPostResponse;
+        return ResponseEntity.ok(new AllPostResponse(countPosts, postsList));
     }
 
     //=================================================================================
@@ -353,7 +345,7 @@ public class PostService {
 
 
         if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
         }
 
         ErrorResponse errorResponse;
@@ -412,131 +404,128 @@ public class PostService {
     }
 
     //=================================================================================
-    public ResponseEntity<ErrorResponse> editPost(NewPostRequest postRequest, Principal principal, Long id) {
-        var newPostResponse = new ErrorResponse();
+    public ResponseEntity<Response> editPost(NewPostRequest postRequest, Long id) {
         HashMap<String, String> errors = new HashMap<>();
+        if (authCheck.securityCheck()) {
 
-        if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
-        }
+            String userEmail = SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getName();
+            if (postRequest.getTitle().length() >= 3 &&
+                    Jsoup.parse(postRequest.getText()).text().length() >= 50) {
+                var editPost = postRepository.findByIdAuth(id);
+                if (editPost == null) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT_FOUND");
+                }
+                if (editPost.getUser().getEmail().equals(userEmail)
+                        || userRepository.findByEmail(userEmail).getIsModerator() == 1) {
 
-        if (postRequest.getTitle().length() >= 3 &&
-                Jsoup.parse(postRequest.getText()).text().length() >= 50) {
-            var editPost = postRepository.findByIdAuth(id);
-            if (editPost == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT_FOUND");
-            }
-            if (editPost.getUser().getEmail().equals(principal.getName())
-                    || userRepository.findByEmail(principal.getName()).getIsModerator() == 1) {
+                    editPost.setTitle(postRequest.getTitle());
+                    editPost.setText(postRequest.getText());
+                    editPost.setTime(new Date(postRequest.getTimestamp() * 1000));
+                    editPost.setIsActive(postRequest.getActive());
+                    editPost.setModerationStatus(ModerationStatus.NEW);
+                    postRepository.save(editPost);
 
-                editPost.setTitle(postRequest.getTitle());
-                editPost.setText(postRequest.getText());
-                editPost.setTime(new Date(postRequest.getTimestamp() * 1000));
-                editPost.setIsActive(postRequest.getActive());
-                editPost.setModerationStatus(ModerationStatus.NEW);
-                postRepository.save(editPost);
-
-                for (String tag : postRequest.getTags()) {
-                    var newTag = new Tag();
-                    newTag.setName(tag);
-                    if (tagsRepository.findByName(tag).isEmpty()) {
-                        tagsRepository.save(newTag);
+                    for (String tag : postRequest.getTags()) {
+                        var newTag = new Tag();
+                        newTag.setName(tag);
+                        if (tagsRepository.findByName(tag).isEmpty()) {
+                            tagsRepository.save(newTag);
+                        }
+                        var tagToPost = new TagToPost();
+                        tagToPost.setPostId(editPost.getId());
+                        tagToPost.setTagId(tagsRepository.findByName(newTag.getName()).get(0).getId());
+                        tagToPostRepository.save(tagToPost);
                     }
-                    var tagToPost = new TagToPost();
-                    tagToPost.setPostId(editPost.getId());
-                    tagToPost.setTagId(tagsRepository.findByName(newTag.getName()).get(0).getId());
-                    tagToPostRepository.save(tagToPost);
+                }
+                return ResponseEntity.ok(new ResultResponse(true));
+            }
+            if (postRequest.getTitle().length() < 3) {
+                errors.put("title", "Заголовок не установлен");
+            }
+            if (Jsoup.parse(postRequest.getText()).text().length() < 50) {
+                errors.put("text", "Текст публикации слишком короткий");
+            }
+        }
+        return ResponseEntity.ok(new ErrorResponse(false, errors));
+    }
+
+//=================================================================================
+
+    public ResponseEntity<Response> moderationModer(ModerationRequest moderationRequest) {
+
+        if (authCheck.securityCheck()) {
+            var moderator = userRepository.findByEmail(SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getName());
+            if (moderator.getIsModerator() == 1) {
+                var postForModeration = postRepository.findPostById(moderationRequest.getId());
+                switch (moderationRequest.getDecision()) {
+                    case "accept":
+                        postForModeration.setModerationStatus(ModerationStatus.ACCEPTED);
+                        postForModeration.setModeratorId(moderator.getId());
+                        postRepository.save(postForModeration);
+                        break;
+                    case "decline":
+                        postForModeration.setModerationStatus(ModerationStatus.DECLINED);
+                        postForModeration.setModeratorId(moderator.getId());
+                        postRepository.save(postForModeration);
+                        break;
+                    default:
+                        break;
                 }
             }
-            newPostResponse.setResult(true);
-            return ResponseEntity.ok(newPostResponse);
+            return ResponseEntity.ok(new ResultResponse(true));
         }
-        if (postRequest.getTitle().length() < 3) {
-            errors.put("title", "Заголовок не установлен");
-        }
-        if (Jsoup.parse(postRequest.getText()).text().length() < 50) {
-            errors.put("text", "Текст публикации слишком короткий");
-        }
-        newPostResponse.setResult(false);
-        newPostResponse.setErrors(errors);
-        return ResponseEntity.ok(newPostResponse);
+        return ResponseEntity.ok(new ResultResponse(false));
     }
 
 //=================================================================================
 
-    public ResponseEntity<ResultResponse> moderation(ModerationRequest moderationRequest
-            , Principal principal) {
-        var resultResponse = new ResultResponse();
+    public ResponseEntity<Response> comment(CommentRequest commentRequest) {
 
+        if (authCheck.securityCheck()) {
+            var errorResponse = new ErrorResponse();
+            HashMap<String, String> errors = new HashMap<>();
+            Long idPostComment;
 
-        if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
-        var moderator = userRepository.findByEmail(principal.getName());
-        if (moderator.getIsModerator() == 1) {
-            var postForModeration = postRepository.findPostById(moderationRequest.getId());
-            switch (moderationRequest.getDecision()) {
-                case "accept":
-                    postForModeration.setModerationStatus(ModerationStatus.ACCEPTED);
-                    postForModeration.setModeratorId(moderator.getId());
-                    postRepository.save(postForModeration);
-                    break;
-                case "decline":
-                    postForModeration.setModerationStatus(ModerationStatus.DECLINED);
-                    postForModeration.setModeratorId(moderator.getId());
-                    postRepository.save(postForModeration);
-                    break;
-                default:
-                    break;
-            }
-            resultResponse.setResult(true);
-        }
-        return ResponseEntity.ok(resultResponse);
-    }
-
-//=================================================================================
-
-    public ResponseEntity<?> comment(CommentRequest commentRequest, Principal principal) {
-
-        if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
-        }
-
-        var successfullyCommentResponse = new SuccessfullyCommentResponse();
-        var errorResponse = new ErrorResponse();
-        HashMap<String, String> errors = new HashMap<>();
-
-
-        if (commentRequest.getParentId() != null) {
-            if (postCommentRepository.findById(commentRequest.getParentId()).isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong parent post id");
-            }
-        }
-        if (postCommentRepository.findById(commentRequest.getPostId()).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong post id");
-        }
-
-        var text = Jsoup.parse(commentRequest.getText()).text();
-
-        if (text.length() <= 10) {
-            errors.put("text", "Текст комментария не задан или слишком короткий");
-            errorResponse.setErrors(errors);
-            errorResponse.setResult(false);
-            return ResponseEntity.ok(errorResponse);
-
-        } else {
-            var postComment = new PostComment();
             if (commentRequest.getParentId() != null) {
-                postComment.setParentId(commentRequest.getParentId());
-            } else postComment.setParentId(null);
-            postComment.setPost(postRepository.findPostById(commentRequest.getPostId()));
-            postComment.setText(commentRequest.getText());
-            postComment.setTime(new Date());
-            postComment.setUser(userRepository.findByEmail(principal.getName()));
-            postCommentRepository.save(postComment);
-            successfullyCommentResponse.setId(postCommentRepository.findByText(commentRequest.getText()).getId());
+                if (postCommentRepository.findById(commentRequest.getParentId()).isEmpty()) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong parent post id");
+                }
+            }
+            if (postCommentRepository.findById(commentRequest.getPostId()).isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong post id");
+            }
+
+            var text = Jsoup.parse(commentRequest.getText()).text();
+
+            if (text.length() <= 10) {
+                errors.put("text", "Текст комментария не задан или слишком короткий");
+                errorResponse.setErrors(errors);
+                errorResponse.setResult(false);
+                return ResponseEntity.ok(errorResponse);
+
+            } else {
+                var postComment = new PostComment();
+                if (commentRequest.getParentId() != null) {
+                    postComment.setParentId(commentRequest.getParentId());
+                } else postComment.setParentId(null);
+                postComment.setPost(postRepository.findPostById(commentRequest.getPostId()));
+                postComment.setText(commentRequest.getText());
+                postComment.setTime(new Date());
+                postComment.setUser(userRepository.findByEmail(SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName()));
+                idPostComment = postCommentRepository.save(postComment).getId();
+            }
+            return ResponseEntity.ok(new SuccessfullyCommentResponse(idPostComment));
         }
-        return ResponseEntity.ok(successfullyCommentResponse);
+        return ResponseEntity.ok(new SuccessfullyCommentResponse());
     }
 
 //=================================================================================

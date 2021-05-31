@@ -49,7 +49,7 @@ public class ApiGeneralController {
      */
     @GetMapping("/settings")
     @ApiOperation(value = "Получение настроек")
-    public SettingsResponse settings() {
+    public ResponseEntity<Response> settings() {
         return settingsService.getGlobalSettings();
     }
 
@@ -58,9 +58,8 @@ public class ApiGeneralController {
      */
     @PutMapping("/settings")
     @ApiOperation(value = "Сохранение настроек")
-    public SettingsResponse setSettings(@RequestBody SettingRequest settingRequest
-            , Principal principal) {
-        return settingsService.setGlobalSettings(settingRequest, principal);
+    public ResponseEntity<Response> setSettings(@RequestBody SettingRequest settingRequest) {
+        return settingsService.setGlobalSettings(settingRequest);
     }
 
     /**
@@ -68,7 +67,7 @@ public class ApiGeneralController {
      */
     @GetMapping("/init")
     @ApiOperation(value = "Общие данные блога")
-    public InitResponse init() {
+    public Response init() {
         return initResponse;
     }
 
@@ -77,7 +76,7 @@ public class ApiGeneralController {
      */
     @GetMapping("/tag")
     @ApiOperation(value = "Получение списка тэгов")
-    public TagResponse tag(@RequestParam(required = false) String query) {
+    public ResponseEntity<Response> tag(@RequestParam(required = false) String query) {
         return tagService.getTags(query);
     }
 
@@ -86,7 +85,7 @@ public class ApiGeneralController {
      */
     @GetMapping("/calendar")
     @ApiOperation(value = "Календарь (количества публикаций)")
-    public CalendarResponse calendar() {
+    public ResponseEntity<Response> calendar() {
         return postService.calendar();
     }
 
@@ -95,9 +94,8 @@ public class ApiGeneralController {
      */
     @PostMapping("/moderation")
     @ApiOperation(value = "Получение списков постов на модерацию")
-    public ResponseEntity<ResultResponse> moderation(@RequestBody ModerationRequest moderationRequest
-            , Principal principal) {
-        return postService.moderation(moderationRequest, principal);
+    public ResponseEntity<Response> moderation(@RequestBody ModerationRequest moderationRequest) {
+        return postService.moderationModer(moderationRequest);
     }
 
     /**
@@ -105,8 +103,8 @@ public class ApiGeneralController {
      */
     @PostMapping("/comment")
     @ApiOperation(value = "Отправка комментария к посту")
-    public ResponseEntity<?> comment(@RequestBody CommentRequest commentRequest, Principal principal) {
-        return postService.comment(commentRequest, principal);
+    public ResponseEntity<Response> comment(@RequestBody CommentRequest commentRequest) {
+        return postService.comment(commentRequest);
     }
 
     /**
@@ -114,8 +112,8 @@ public class ApiGeneralController {
      */
     @GetMapping("/statistics/my")
     @ApiOperation(value = "Моя статистика")
-    public StatisticResponse myStatistic(Principal principal) {
-        return statisticsService.myStatistics(principal);
+    public ResponseEntity<Response> myStatistic() {
+        return statisticsService.myStatistics();
     }
 
     /**
@@ -123,8 +121,8 @@ public class ApiGeneralController {
      */
     @GetMapping("/statistics/all")
     @ApiOperation(value = "Статистика по всему блогу")
-    public StatisticResponse allStatistic(Principal principal) {
-        return statisticsService.allStatistics(principal);
+    public ResponseEntity<Response> allStatistic() {
+        return statisticsService.allStatistics();
     }
 
     /**
@@ -132,11 +130,10 @@ public class ApiGeneralController {
      */
     @PostMapping(value = "/image")
     @ApiOperation(value = "Загрузка изображений")
-    public ResponseEntity<?> uploadImage(HttpServletRequest request,
-                                         @RequestParam("image") MultipartFile image,
-                                         Principal principal)  {
+    public ResponseEntity uploadImage(HttpServletRequest request,
+                                         @RequestParam("image") MultipartFile image)  {
 
-        return ResponseEntity.ok(storageService.store(request, image, principal));
+        return ResponseEntity.ok(storageService.store(request, image));
     }
 
     /**
@@ -146,12 +143,9 @@ public class ApiGeneralController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Редактирование моего профиля")
-    public ResponseEntity<?> updateProfileWithPhoto(@RequestParam(value = "photo") MultipartFile photo,
-                                                    @RequestParam(value = "name", required = false) String name,
-                                                    @RequestParam(value = "email", required = false) String email,
-                                                    @RequestParam(value = "password", required = false) String password,
-                                                    Principal principal) throws IOException {
-        return profileService.profileMy(photo, name, email, password, principal);
+    public ResponseEntity<Response> updateProfileWithPhoto(@RequestParam(value = "photo") MultipartFile photo,
+                                                    @RequestBody MyProfileRequest myProfileRequest) throws IOException {
+        return profileService.profileMy(photo, myProfileRequest);
     }
 
     /**
@@ -161,8 +155,7 @@ public class ApiGeneralController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Редактирование моего профиля")
-    public ResponseEntity<?> updateProfileWithOutPhoto(@RequestBody MyProfileRequest myProfileRequest,
-                                                       Principal principal) {
-        return profileService.profileMyWithoutFoto(myProfileRequest, principal);
+    public ResponseEntity<Response> updateProfileWithOutPhoto(@RequestBody MyProfileRequest myProfileRequest) {
+        return profileService.profileMyWithoutFoto(myProfileRequest);
     }
 }

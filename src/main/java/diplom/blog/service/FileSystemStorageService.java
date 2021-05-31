@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,7 +21,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
@@ -42,7 +42,7 @@ public class FileSystemStorageService {
     private String API_SECRET;
 
 
-    public String cloudStore(Principal principal, Image photo, String name) throws IOException {
+    public String cloudStore(Image photo, String name) throws IOException {
 
         var cloudinary = new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", CLOUD_NAME,
@@ -73,31 +73,24 @@ public class FileSystemStorageService {
     }
 
 
-    public Object store(HttpServletRequest request, MultipartFile image, Principal principal) {
+    public Object store(HttpServletRequest request, MultipartFile image) {
 
         final var FILE_PATTERN = Pattern.compile("^(.*)(.)(png|jpe?g)$");
 
-
-        if (principal == null) {
+        if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         if (image.isEmpty()
                 || !FILE_PATTERN.matcher(Objects.requireNonNull(image.getOriginalFilename())).matches()) {
-            var errorResponse = new ErrorResponse();
             HashMap<String, String> errors = new HashMap<>();
             errors.put("image", "Файл должен быть изображением png, jpg, jpeg");
-            errorResponse.setResult(false);
-            errorResponse.setErrors(errors);
-            return new ResponseEntity<ErrorResponse>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(new ErrorResponse(false, errors));
         }
         if (image.getSize() > 5242880) {
 
-            var errorResponse = new ErrorResponse();
             HashMap<String, String> errors = new HashMap<>();
             errors.put("image", "Размер файла превышает допустимый размер");
-            errorResponse.setResult(false);
-            errorResponse.setErrors(errors);
-            return new ResponseEntity<ErrorResponse>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(new ErrorResponse(false, errors));
         }
 
         String path = "/upload/" + getRandomPath() + "/" + image.getOriginalFilename();

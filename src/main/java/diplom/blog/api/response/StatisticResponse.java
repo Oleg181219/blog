@@ -7,16 +7,16 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Data
 @Component
-public class StatisticResponse {
+public class StatisticResponse  implements Response{
 
-    private Long postsCount;
+    private int postsCount;
 
-    private Long likesCount;
+    private int likesCount;
 
-    private Long dislikesCount;
+    private int dislikesCount;
 
-    private Long viewsCount;
+    private int viewsCount;
 
-    private Long firstPublication;
+    private int firstPublication;
 
 }

@@ -1,5 +1,6 @@
 package diplom.blog.service;
 
+import diplom.blog.api.response.Response;
 import diplom.blog.api.response.TagResponse;
 import diplom.blog.model.DtoModel.TagDTO;
 import diplom.blog.model.Post;
@@ -7,6 +8,7 @@ import diplom.blog.model.Tag;
 import diplom.blog.repo.PostRepository;
 import diplom.blog.repo.TagsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,9 +25,9 @@ public class TagService {
         this.postRepository = postRepository;
     }
 
-    TagResponse tagResponse = new TagResponse();
 
-    public TagResponse getTags(String query) {
+
+    public ResponseEntity<Response> getTags(String query) {
         List<Tag> allTagToPost = tagsRepository.findAll();
         List<Post> allPosts = postRepository.getCountPosts();
         ArrayList<TagDTO> respTags = new ArrayList<>();
@@ -52,8 +54,8 @@ public class TagService {
             respTag.setWeight(entry.getValue() / (double) allPosts.size() * dWeightMax);
             respTags.add(respTag);
         });
-        tagResponse.setTags(respTags);
-        return tagResponse;
+
+        return ResponseEntity.ok(new TagResponse(respTags));
     }
 }
 

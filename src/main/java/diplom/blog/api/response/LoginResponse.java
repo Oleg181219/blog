@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Data
 @AllArgsConstructor
 @Component
-public class LoginResponse {
+public class LoginResponse  implements Response{
 
     private boolean result;
 

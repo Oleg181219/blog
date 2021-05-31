@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class InitResponse {
+public class InitResponse  implements Response{
     @Value("${blog.title}")
     private String title;
 
@@ -24,6 +24,5 @@ public class InitResponse {
 
     @Value("${blog.copyrightFrom}")
     private String copyrightFrom;
-
 
 }

@@ -2,17 +2,12 @@ package diplom.blog.controller;
 
 import diplom.blog.api.request.NewPostRequest;
 import diplom.blog.api.request.PostVotesRequest;
-import diplom.blog.api.response.AllPostResponse;
-import diplom.blog.api.response.ErrorResponse;
-import diplom.blog.api.response.ResultResponse;
-import diplom.blog.model.DtoModel.PostByIdDTO;
+import diplom.blog.api.response.Response;
 import diplom.blog.service.PostService;
 import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 
 @RestController
@@ -30,9 +25,9 @@ public class ApiPostController {
      */
     @GetMapping("/post")
     @ApiOperation(value = "Список постов")
-    public AllPostResponse posts(@RequestParam("mode") String mode,
-                                 @RequestParam("offset") int offset,
-                                 @RequestParam("limit") int limit) throws NotFoundException {
+    public ResponseEntity<Response> posts(@RequestParam("mode") String mode,
+                                          @RequestParam("offset") int offset,
+                                          @RequestParam("limit") int limit) throws NotFoundException {
         return postService.allPost(offset, limit, mode);
     }
 
@@ -41,9 +36,9 @@ public class ApiPostController {
      */
     @GetMapping("/post/search")
     @ApiOperation(value = "Поиск постов")
-    public AllPostResponse postsSearch(@RequestParam("offset") int offset,
-                                       @RequestParam("limit") int limit,
-                                       @RequestParam("query") String query) {
+    public ResponseEntity<Response> postsSearch(@RequestParam("offset") int offset,
+                                                @RequestParam("limit") int limit,
+                                                @RequestParam("query") String query) {
         return postService.postsSearch(offset, limit, query);
     }
 
@@ -52,9 +47,9 @@ public class ApiPostController {
      */
     @GetMapping("/post/byDate")
     @ApiOperation(value = "Список постов за указанную дату")
-    public AllPostResponse postSearchByDate(@RequestParam("offset") int offset,
-                                            @RequestParam("limit") int limit,
-                                            @RequestParam("date") String date) {
+    public ResponseEntity<Response> postSearchByDate(@RequestParam("offset") int offset,
+                                                     @RequestParam("limit") int limit,
+                                                     @RequestParam("date") String date) {
         return postService.findPostsByDate(offset, limit, date);
     }
 
@@ -63,9 +58,9 @@ public class ApiPostController {
      */
     @GetMapping("/post/byTag")
     @ApiOperation(value = "Список постов по тэгу")
-    public AllPostResponse postSearchByTag(@RequestParam("offset") int offset,
-                                           @RequestParam("limit") int limit,
-                                           @RequestParam("tag") String tag) {
+    public ResponseEntity<Response> postSearchByTag(@RequestParam("offset") int offset,
+                                                    @RequestParam("limit") int limit,
+                                                    @RequestParam("tag") String tag) {
         return postService.findPostsByTag(offset, limit, tag);
     }
 
@@ -74,8 +69,8 @@ public class ApiPostController {
      */
     @GetMapping("/post/{id}")
     @ApiOperation(value = "Получение поста")
-    public PostByIdDTO postSearchById(@PathVariable long id, Principal principal) {
-        return postService.findPostById(id, principal);
+    public ResponseEntity<Response> postSearchById(@PathVariable long id) {
+        return postService.findPostById(id);
     }
 
     /**
@@ -83,9 +78,8 @@ public class ApiPostController {
      */
     @PostMapping("/post")
     @ApiOperation(value = "Добавление поста")
-    public ResponseEntity<ErrorResponse> postNewPost(@RequestBody NewPostRequest postRequest,
-                                                     Principal principal) {
-        return postService.newPost(postRequest, principal);
+    public ResponseEntity<Response> postNewPost(@RequestBody NewPostRequest postRequest) {
+        return postService.newPost(postRequest);
     }
 
     /**
@@ -93,10 +87,9 @@ public class ApiPostController {
      */
     @PutMapping("/post/{id}")
     @ApiOperation(value = "Редактирование поста")
-    public ResponseEntity<ErrorResponse> editPost(@RequestBody NewPostRequest postRequest,
-                                                  Principal principal,
-                                                  @PathVariable long id) {
-        return postService.editPost(postRequest, principal, id);
+    public ResponseEntity<Response> editPost(@RequestBody NewPostRequest postRequest,
+                                             @PathVariable long id) {
+        return postService.editPost(postRequest, id);
     }
 
     /**
@@ -104,11 +97,10 @@ public class ApiPostController {
      */
     @GetMapping("/post/moderation")
     @ApiOperation(value = "Список постов на модерацию")
-    public AllPostResponse moderation(@RequestParam("offset") int offset,
-                                      @RequestParam("limit") int limit,
-                                      @RequestParam("status") String status,
-                                      Principal principal) {
-        return postService.moderation(offset, limit, status, principal);
+    public ResponseEntity<Response> moderation(@RequestParam("offset") int offset,
+                                               @RequestParam("limit") int limit,
+                                               @RequestParam("status") String status) {
+        return postService.moderation(offset, limit, status);
     }
 
     /**
@@ -116,11 +108,10 @@ public class ApiPostController {
      */
     @GetMapping("/post/my")
     @ApiOperation(value = "Список моих постов")
-    public AllPostResponse myPost(@RequestParam("offset") int offset,
-                                  @RequestParam("limit") int limit,
-                                  @RequestParam("status") String status,
-                                  Principal principal) {
-        return postService.myPost(offset, limit, status, principal);
+    public ResponseEntity<Response> myPost(@RequestParam("offset") int offset,
+                                           @RequestParam("limit") int limit,
+                                           @RequestParam("status") String status) {
+        return postService.myPost(offset, limit, status);
     }
 
     /**
@@ -128,9 +119,8 @@ public class ApiPostController {
      */
     @PostMapping("/post/like")
     @ApiOperation(value = "Лайк поста")
-    public ResponseEntity<ResultResponse> like(@RequestBody PostVotesRequest postVotesRequest,
-                                               Principal principal) {
-        return postService.likeVotes(postVotesRequest, principal);
+    public ResponseEntity<Response> like(@RequestBody PostVotesRequest postVotesRequest) {
+        return postService.likeVotes(postVotesRequest);
     }
 
     /**
@@ -138,9 +128,8 @@ public class ApiPostController {
      */
     @PostMapping("/post/dislike")
     @ApiOperation(value = "Дизлайк поста")
-    public ResponseEntity<ResultResponse> disLike(@RequestBody PostVotesRequest postVotesRequest,
-                                                  Principal principal) {
-        return postService.disLikeVotes(postVotesRequest, principal);
+    public ResponseEntity<Response> disLike(@RequestBody PostVotesRequest postVotesRequest) {
+        return postService.disLikeVotes(postVotesRequest);
     }
 
 

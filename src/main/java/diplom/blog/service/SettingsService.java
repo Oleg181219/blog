@@ -1,32 +1,38 @@
 package diplom.blog.service;
 
 import diplom.blog.api.request.SettingRequest;
+import diplom.blog.api.response.Response;
 import diplom.blog.api.response.SettingsResponse;
 import diplom.blog.model.GlobalSettings;
 import diplom.blog.repo.GlobalSettingsRepository;
 import diplom.blog.repo.UserRepository;
+import diplom.blog.util.AuthCheck;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.util.List;
 
 @Service
 public class SettingsService {
     private final GlobalSettingsRepository settingsRepository;
     private final UserRepository userRepository;
+    private final AuthCheck authCheck;
 
 
     @Autowired
-    public SettingsService(GlobalSettingsRepository settingsRepository
-            , UserRepository userRepository) {
+    public SettingsService(GlobalSettingsRepository settingsRepository,
+                           UserRepository userRepository,
+                           AuthCheck authCheck) {
         this.settingsRepository = settingsRepository;
         this.userRepository = userRepository;
+        this.authCheck = authCheck;
     }
 
-    public SettingsResponse getGlobalSettings() {
+    public ResponseEntity<Response> getGlobalSettings() {
         var settingsResponse = new SettingsResponse();
 
         List<GlobalSettings> gs = settingsRepository.findAll();
@@ -46,31 +52,34 @@ public class SettingsService {
                 default:
                     break;
             }
-
         }
-
-        return settingsResponse;
+        return ResponseEntity.ok(settingsResponse);
     }
 
-    public SettingsResponse setGlobalSettings(SettingRequest settingRequest, Principal principal) {
-        if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
-        }
-        if (userRepository.findByEmail(principal.getName()).getIsModerator() != 1) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
-        }
-        var newMultiUser = settingsRepository.getGlobalSettingsById(1L);
-        newMultiUser.setValue(Boolean.TRUE.equals(settingRequest.getMultiuserMode()) ? "YES" : "NO");
-        settingsRepository.save(newMultiUser);
+    public ResponseEntity<Response> setGlobalSettings(SettingRequest settingRequest) {
 
-        var newPostModer = settingsRepository.getGlobalSettingsById(2L);
-        newPostModer.setValue(Boolean.TRUE.equals(settingRequest.getPostPremoderation()) ? "YES" : "NO");
-        settingsRepository.save(newPostModer);
+       if( authCheck.securityCheck()) {
+           if (userRepository.findByEmail(SecurityContextHolder
+                   .getContext()
+                   .getAuthentication()
+                   .getName())
+                   .getIsModerator() != 1) {
+               throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+           }
+           var newMultiUser = settingsRepository.getGlobalSettingsByCode("MULTIUSER_MODE");
+           newMultiUser.setValue(Boolean.TRUE.equals(settingRequest.getMultiuserMode()) ? "YES" : "NO");
+           settingsRepository.save(newMultiUser);
 
-        var newStatisticsIsPublic = settingsRepository.getGlobalSettingsById(3L);
-        newStatisticsIsPublic.setValue(Boolean.TRUE.equals(settingRequest.getStatisticsIsPublic()) ? "YES" : "NO");
-        settingsRepository.save(newStatisticsIsPublic);
+           var newPostModer = settingsRepository.getGlobalSettingsByCode("POST_PREMODERATION");
+           newPostModer.setValue(Boolean.TRUE.equals(settingRequest.getPostPremoderation()) ? "YES" : "NO");
+           settingsRepository.save(newPostModer);
 
-        return getGlobalSettings();
+           var newStatisticsIsPublic = settingsRepository.getGlobalSettingsByCode("STATISTICS_IS_PUBLIC");
+           newStatisticsIsPublic.setValue(Boolean.TRUE.equals(settingRequest.getStatisticsIsPublic()) ? "YES" : "NO");
+           settingsRepository.save(newStatisticsIsPublic);
+
+           return getGlobalSettings();
+       }
+        return ResponseEntity.badRequest().body(new SettingsResponse());
     }
 }

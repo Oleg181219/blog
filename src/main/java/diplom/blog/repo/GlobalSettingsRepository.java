@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface GlobalSettingsRepository extends JpaRepository<GlobalSettings, Long> {
 
-    GlobalSettings getGlobalSettingsById(Long id);
+    GlobalSettings getGlobalSettingsByCode(String code);
 
     @Override
     List<GlobalSettings> findAll();

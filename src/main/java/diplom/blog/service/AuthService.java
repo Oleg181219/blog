@@ -172,6 +172,7 @@ public class AuthService {
         var message = emailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, "utf-8");
         var htmlMsg = "<a href=\"" + text + "\">Follow the link to change the password on the site</a>";
+
         message.setContent(htmlMsg, "text/html");
         helper.setTo(email);
         helper.setSubject("Test html email");

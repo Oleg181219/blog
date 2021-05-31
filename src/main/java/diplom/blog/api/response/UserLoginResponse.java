@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
-public class UserLoginResponse {
+public class UserLoginResponse  implements Response{
     private Long id;
     private String name;
     private String photo;

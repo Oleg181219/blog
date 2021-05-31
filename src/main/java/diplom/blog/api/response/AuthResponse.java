@@ -13,7 +13,7 @@ import java.util.Map;
 @Component
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AuthResponse {
+public class AuthResponse  implements Response{
 
     private Boolean result;
 

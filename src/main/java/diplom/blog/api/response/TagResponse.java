@@ -10,7 +10,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @Data
 @Component
-public class TagResponse {
+public class TagResponse  implements Response{
 
     private ArrayList<TagDTO> tags;
 
