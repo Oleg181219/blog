@@ -16,6 +16,7 @@ import diplom.blog.repo.PostRepository;
 import diplom.blog.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -69,7 +70,7 @@ public class AuthService {
     }
 
 
-    public AuthResponse register(NewUserRequest user) {
+    public ResponseEntity<Response> register(NewUserRequest user) {
         HashMap<String, String> respMap = new HashMap<>();
         var emailResp = userRepository.findByEmail(user.getEmail());
         var capCod = captchaCodesRepository.findBySecretCode(user.getCaptchaSecret());
@@ -99,12 +100,10 @@ public class AuthService {
             newUser.setRegTime(new Date());
             userRepository.save(newUser);
 
-            return authResponse;
-        } else {
-            authResponse.setResult(false);
-            authResponse.setErrors(respMap);
+            return ResponseEntity.ok(new AuthResponse(true));
         }
-        return authResponse;
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse(false, respMap));
     }
 
     //=================================================================================
@@ -129,13 +128,13 @@ public class AuthService {
     }
 
     //=================================================================================
-    public ResponseEntity<?> check() {
+    public ResponseEntity<Response> check() {
         var authName = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(authName.isEmpty()){
+        if (authName.isEmpty()) {
             return ResponseEntity.ok(new ResultResponse(false));
         }
         var curentUser = userRepository.findByEmail(authName);
-        if(curentUser == null){
+        if (curentUser == null) {
             return ResponseEntity.ok(new ResultResponse(false));
         }
         return ResponseEntity.ok(getLoginResponse(curentUser));
@@ -156,7 +155,7 @@ public class AuthService {
     }
 
     //=================================================================================
-    public ResponseEntity<?> restorePassword(String email) throws MessagingException {
+    public ResponseEntity<Response> restorePassword(String email) throws MessagingException {
         var user = userRepository.findByEmail(email);
         if (user == null) {
             return ResponseEntity.ok(new ResultResponse(false));
@@ -168,7 +167,7 @@ public class AuthService {
             int index = (int) (random.nextFloat() * CODE.length());
             hash.append(CODE.charAt(index));
         }
-        var text = new StringBuilder(pathToRestorePassword).append(hash).toString();
+        var text = new StringBuilder(pathToRestorePassword).append(hash).toString();//TODO прилепить время
         var message = emailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, "utf-8");
         var htmlMsg = "<a href=\"" + text + "\">Follow the link to change the password on the site</a>";
@@ -178,14 +177,17 @@ public class AuthService {
         helper.setSubject("Test html email");
 
 
-        this.emailSender.send(message);
+        Runnable task = () -> this.emailSender.send(message);
+        Thread thread = new Thread(task);
+        thread.start();
+
         user.setCode(hash.toString() + (new Date().getTime()));
         userRepository.save(user);
         return ResponseEntity.ok(new ResultResponse(true));
     }
     //=================================================================================
 
-    public ResponseEntity<?> authPassword(AuthPasswordRequest authPasswordRequest) {
+    public ResponseEntity<Response> authPassword(AuthPasswordRequest authPasswordRequest) {
 
         var authResponse = new AuthResponse();
         var errors = new HashMap<String, String>();
@@ -216,10 +218,11 @@ public class AuthService {
         if (!errors.isEmpty()) {
             authResponse.setResult(false);
             authResponse.setErrors(errors);
-            return ResponseEntity.ok(authResponse);
+            return ResponseEntity.ok(new AuthResponse(false, errors));
         }
 
         var user = userRepository.findById(userId);
+
         user.setPassword(passwordEncoder().encode(authPasswordRequest.getPassword()));
         userRepository.save(user);
 
@@ -293,6 +296,6 @@ public class AuthService {
         userLoginResponse.setPhoto(curentUser.getPhoto());
         userLoginResponse.setSettings(curentUser.getIsModerator() == 1);
 
-        return new LoginResponse(true,userLoginResponse );
+        return new LoginResponse(true, userLoginResponse);
     }
 }

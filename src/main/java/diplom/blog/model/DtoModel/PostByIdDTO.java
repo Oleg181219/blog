@@ -1,8 +1,10 @@
 package diplom.blog.model.DtoModel;
 
+import diplom.blog.api.response.Response;
+
 import java.util.List;
 
-public class PostByIdDTO {
+public class PostByIdDTO  implements Response {
 
     private Long id;
 

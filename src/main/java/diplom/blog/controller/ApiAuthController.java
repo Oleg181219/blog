@@ -4,7 +4,7 @@ import diplom.blog.api.request.AuthPasswordRequest;
 import diplom.blog.api.request.AuthRestoreRequest;
 import diplom.blog.api.request.LoginRequest;
 import diplom.blog.api.request.NewUserRequest;
-import diplom.blog.api.response.AuthResponse;
+import diplom.blog.api.response.Response;
 import diplom.blog.model.DtoModel.CaptchaDTO;
 import diplom.blog.service.AuthService;
 import io.swagger.annotations.Api;
@@ -50,7 +50,7 @@ public class ApiAuthController {
      */
     @GetMapping("/check")
     @ApiOperation(value = "Проверка авторизации")
-    public ResponseEntity<?> check() {
+    public ResponseEntity<Response> check() {
         return authService.check();
     }
 
@@ -68,7 +68,7 @@ public class ApiAuthController {
      */
     @PostMapping("/register")
     @ApiOperation(value = "Регистрация нового пользователя")
-    public AuthResponse register(@RequestBody @Valid NewUserRequest user) {
+    public ResponseEntity<Response> register(@RequestBody @Valid NewUserRequest user) {
         return authService.register(user);
     }
 
@@ -77,7 +77,7 @@ public class ApiAuthController {
      */
     @PostMapping("/restore")
     @ApiOperation(value = "Запрос ссылки на восстановление пароля")
-    public ResponseEntity<?> restore(@RequestBody AuthRestoreRequest email) throws MessagingException {
+    public ResponseEntity<Response> restore(@RequestBody AuthRestoreRequest email) throws MessagingException {
         return authService.restorePassword(email.getEmail());
     }
 
@@ -86,7 +86,7 @@ public class ApiAuthController {
      */
     @PostMapping("/password")
     @ApiOperation(value = "Восстановление пароля")
-    public ResponseEntity<?> newPassword(@RequestBody AuthPasswordRequest authPasswordRequest) {
+    public ResponseEntity<Response> newPassword(@RequestBody AuthPasswordRequest authPasswordRequest) {
         return authService.authPassword(authPasswordRequest);
     }
 }

@@ -149,16 +149,19 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "LEFT JOIN User u ON u.id=p.user.id " +
             "LEFT JOIN PostComment pc ON p.id = pc.post.id " +
             "LEFT JOIN PostVotes pv ON p.id = pv.post.id " +
-            "WHERE p.isActive = 1 " +
+            "WHERE p.isActive = :isActive " +
             "AND p.moderationStatus = :status " +
             "AND p.user.id = :id " +
             "GROUP BY p.id ORDER BY p.time desc ")
-    Page<Post> findAllMyPostIsActive(Pageable pageable, @Param("status") Enum<ModerationStatus> status, @Param("id") int id);
+    Page<Post> findAllMyPostIsActive(Pageable pageable,
+                                     @Param("status") Enum<ModerationStatus> status,
+                                     @Param("id") int id,
+                                     @Param("isActive") int isActive);
 
-    Post findByTimeAndTitleAndModerationStatusAndText(Date data
-            , String title
-            , Enum<ModerationStatus> moderationStatus
-            , String text);
+    Post findByTimeAndTitleAndModerationStatusAndText(Date data,
+                                                      String title,
+                                                      Enum<ModerationStatus> moderationStatus,
+                                                      String text);
 
 
     @Query("select p " +

@@ -21,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,7 +57,7 @@ public class PostService {
     SimpleDateFormat formaterPostDate = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formaterYear = new SimpleDateFormat("yyyy");
 
-    public ResponseEntity<?> allPost(int offset, int limit, String mode) throws NotFoundException {
+    public ResponseEntity<Response> allPost(int offset, int limit, String mode) throws NotFoundException {
         Page<Post> allPosts;
         var allPostResponse = new AllPostResponse();
 
@@ -85,7 +84,7 @@ public class PostService {
     }
 
     //=================================================================================
-    public ResponseEntity<?> postsSearch(int offset, int limit, String query) {
+    public ResponseEntity<Response> postsSearch(int offset, int limit, String query) {
         ArrayList<PostDTO> postsList = new ArrayList<>();
         int countPosts;
         Page<Post> allPosts = postRepository.findAllText(PageRequest.of(offset / limit, limit), query);
@@ -126,7 +125,7 @@ public class PostService {
     }
 
     //=================================================================================
-    public ResponseEntity<AllPostResponse> findPostsByDate(int offset, int limit, String date) {
+    public ResponseEntity<Response> findPostsByDate(int offset, int limit, String date) {
 
         ArrayList<PostDTO> postsList = new ArrayList<>();
         Page<Post> allPosts = postRepository.findPostsByDate(PageRequest.of(offset / limit, limit), date);
@@ -148,7 +147,7 @@ public class PostService {
     }
 
     //=================================================================================
-    public ResponseEntity<AllPostResponse> findPostsByTag(int offset, int limit, String tag) {
+    public ResponseEntity<Response> findPostsByTag(int offset, int limit, String tag) {
         ArrayList<PostDTO> postsList = new ArrayList<>();
         int countPosts;
 
@@ -163,7 +162,7 @@ public class PostService {
     }
 
     //=================================================================================
-    public ResponseEntity<PostByIdDTO> findPostById(long id) {
+    public ResponseEntity<Response> findPostById(long id) {
 
 
         var postByIdDTO = new PostByIdDTO();
@@ -180,24 +179,31 @@ public class PostService {
         if (post == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
         }
-        postByIdDTO.setId(post.getId());// id
-        postByIdDTO.setTimestamp(post.getTime().getTime() / 1000);//timestamp
-        postByIdDTO.setActive(post.getIsActive() != 0);// isActive
-        userDTO.setId((long) post.getUser().getId());//user id
-        userDTO.setName(post.getUser().getName());//username
-        postByIdDTO.setUser(userDTO);//user
-        postByIdDTO.setTitle(post.getTitle());//title
-        postByIdDTO.setText(post.getText());//text
-        postByIdDTO.setLikeCount(post.getPostVotes().stream().filter(a -> a.getValue() == 1).count());//likes
-        postByIdDTO.setDislikeCount(post.getPostVotes().stream().filter(a -> a.getValue() != 1).count());//dislikes
+        postByIdDTO.setId(post.getId());
+        postByIdDTO.setTimestamp(post.getTime().getTime() / 1000);
+        postByIdDTO.setActive(post.getIsActive() != 0);
+        userDTO.setId((long) post.getUser().getId());
+        userDTO.setName(post.getUser().getName());
+        postByIdDTO.setUser(userDTO);
+        postByIdDTO.setTitle(post.getTitle());
+        postByIdDTO.setText(post.getText());
+        postByIdDTO.setLikeCount(post.getPostVotes().stream().filter(a -> a.getValue() == 1).count());
+        postByIdDTO.setDislikeCount(post.getPostVotes().stream().filter(a -> a.getValue() != 1).count());
         int viewCount = post.getViewCount();
+
         if (!authCheck.securityCheck()) {
             viewCount++;
 
         } else {
 
-            if (!(SecurityContextHolder.getContext().getAuthentication().getName()).equals(post.getUser().getEmail()) &&
-                    userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).getIsModerator() != 1) {
+            if (!(SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getName()).equals(post.getUser().getEmail()) &&
+                    userRepository.findByEmail(SecurityContextHolder
+                            .getContext()
+                            .getAuthentication()
+                            .getName()).getIsModerator() != 1) {
                 post.setViewCount(viewCount + 1);
                 postRepository.save(post);
             }
@@ -224,183 +230,187 @@ public class PostService {
     }
 
     //=================================================================================
-    public ResponseEntity<Response> moderation(int offset, int limit, String status, Principal principal) {
+    public ResponseEntity<Response> moderation(int offset, int limit, String status) {
         ArrayList<PostDTO> postsList = new ArrayList<>();
         Page<Post> allPosts;
-
-
-        var moder = userRepository.findByEmail(SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName());
         var countPosts = 0;
 
+        if (authCheck.securityCheck()) {
 
-        if (moder.getIsModerator() == 1) {
+            var moder = userRepository.findByEmail(SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getName());
 
-            switch (status) {
-                case "new":
-                    allPosts = postRepository.findAllPostsByModerationStatus(PageRequest.of(offset / limit, limit)
-                            , ModerationStatus.NEW);
-                    countPosts = Math.toIntExact(allPosts.getTotalElements());
-                    for (Post allPost : allPosts) {
-                        PostDTO newRespPost = createNewResponsePosts(allPost);
-                        if (!postsList.contains(newRespPost)) {
-                            postsList.add(newRespPost);
+            if (moder == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse());
+            }
+
+
+            if (moder.getIsModerator() == 1) {
+
+                switch (status) {
+                    case "new":
+                        allPosts = postRepository.findAllPostsByModerationStatus(PageRequest.of(offset / limit, limit)
+                                , ModerationStatus.NEW);
+                        countPosts = Math.toIntExact(allPosts.getTotalElements());
+                        for (Post allPost : allPosts) {
+                            PostDTO newRespPost = createNewResponsePosts(allPost);
+                            if (!postsList.contains(newRespPost)) {
+                                postsList.add(newRespPost);
+                            }
                         }
-                    }
-                    break;
-                case "declined":
-                    allPosts = postRepository.findAllPostsByModerationStatusAndModeratorId(PageRequest.of(offset / limit, limit)
-                            , ModerationStatus.DECLINED, moder.getId());
-                    countPosts = Math.toIntExact(allPosts.getTotalElements());
-                    for (Post allPost : allPosts) {
-                        PostDTO newRespPost = createNewResponsePosts(allPost);
-                        if (!postsList.contains(newRespPost)) {
-                            postsList.add(newRespPost);
+                        break;
+                    case "declined":
+                        allPosts = postRepository.findAllPostsByModerationStatusAndModeratorId(PageRequest.of(offset / limit, limit)
+                                , ModerationStatus.DECLINED, moder.getId());
+                        countPosts = Math.toIntExact(allPosts.getTotalElements());
+                        for (Post allPost : allPosts) {
+                            PostDTO newRespPost = createNewResponsePosts(allPost);
+                            if (!postsList.contains(newRespPost)) {
+                                postsList.add(newRespPost);
+                            }
                         }
-                    }
-                    break;
-                case "accepted":
-                    allPosts = postRepository.findAllPostsByModerationStatusAndModeratorId(PageRequest.of(offset / limit, limit)
-                            , ModerationStatus.ACCEPTED, moder.getId());
-                    countPosts = Math.toIntExact(allPosts.getTotalElements());
-                    for (Post allPost : allPosts) {
-                        PostDTO newRespPost = createNewResponsePosts(allPost);
-                        if (!postsList.contains(newRespPost)) {
-                            postsList.add(newRespPost);
+                        break;
+                    case "accepted":
+                        allPosts = postRepository.findAllPostsByModerationStatusAndModeratorId(PageRequest.of(offset / limit, limit)
+                                , ModerationStatus.ACCEPTED, moder.getId());
+                        countPosts = Math.toIntExact(allPosts.getTotalElements());
+                        for (Post allPost : allPosts) {
+                            PostDTO newRespPost = createNewResponsePosts(allPost);
+                            if (!postsList.contains(newRespPost)) {
+                                postsList.add(newRespPost);
+                            }
                         }
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         return ResponseEntity.ok(new AllPostResponse(countPosts, postsList));
     }
 
     //=================================================================================
-    public AllPostResponse myPost(int offset, int limit, String status, Principal principal) {
-        ArrayList<PostDTO> postsList = new ArrayList<>();
-        Page<Post> allPosts;
-        var allPostResponse = new AllPostResponse();
-        var user = userRepository.findByEmail(principal.getName());
-        var countPosts = 0;
 
-        switch (status) {
-            case ("inactive"):
-                allPosts = postRepository.findAllMyPostInactive(PageRequest.of(offset / limit, limit)
-                        , 0, user.getId());
-                countPosts = Math.toIntExact(allPosts.getTotalElements());
-                for (Post allPost : allPosts) {
-                    PostDTO newRespPost = createNewResponsePosts(allPost);
-                    if (!postsList.contains(newRespPost)) {
-                        postsList.add(newRespPost);
-                    }
-                }
-                break;
-            case ("pending"):
-                allPosts = postRepository.findAllMyPostIsActive(PageRequest.of(offset / limit, limit)
-                        , ModerationStatus.NEW, user.getId());
-                countPosts = Math.toIntExact(allPosts.getTotalElements());
-                for (Post allPost : allPosts) {
-                    PostDTO newRespPost = createNewResponsePosts(allPost);
-                    if (!postsList.contains(newRespPost)) {
-                        postsList.add(newRespPost);
-                    }
-                }
-                break;
-            case ("declined"):
-                allPosts = postRepository.findAllMyPostIsActive(PageRequest.of(offset / limit, limit)
-                        , ModerationStatus.DECLINED, user.getId());
-                countPosts = Math.toIntExact(allPosts.getTotalElements());
-                for (Post allPost : allPosts) {
-                    PostDTO newRespPost = createNewResponsePosts(allPost);
-                    if (!postsList.contains(newRespPost)) {
-                        postsList.add(newRespPost);
-                    }
-                }
-                break;
-            case ("published"):
-                allPosts = postRepository.findAllMyPostIsActive(PageRequest.of(offset / limit, limit)
-                        , ModerationStatus.ACCEPTED, user.getId());
-                countPosts = Math.toIntExact(allPosts.getTotalElements());
-                for (Post allPost : allPosts) {
-                    PostDTO newRespPost = createNewResponsePosts(allPost);
-                    if (!postsList.contains(newRespPost)) {
-                        postsList.add(newRespPost);
-                    }
-                }
-                break;
-            default:
-                break;
+    public ResponseEntity<Response> myPost(int offset, int limit, String status) {
+        final int ACTIVE = 1;
+        final int IN_ACTIVE = 0;
+        if (authCheck.securityCheck()) {
+            var user = userRepository.findByEmail(SecurityContextHolder
+                    .getContext()
+                    .getAuthentication().getName());
+
+            switch (status) {
+                case ("inactive"):
+                    return createModerPostList(ModerationStatus.NEW,
+                            IN_ACTIVE,
+                            user,
+                            offset,
+                            limit);
+                case ("pending"):
+                    return createModerPostList(ModerationStatus.NEW,
+                            ACTIVE,
+                            user,
+                            offset,
+                            limit);
+                case ("declined"):
+                    return createModerPostList(ModerationStatus.DECLINED,
+                            ACTIVE,
+                            user,
+                            offset,
+                            limit);
+                case ("published"):
+                    return createModerPostList(ModerationStatus.ACCEPTED,
+                            ACTIVE,
+                            user,
+                            offset,
+                            limit);
+                default:
+                    break;
+            }
         }
-        allPostResponse.setCount(countPosts);
-        allPostResponse.setPosts(postsList);
-        return allPostResponse;
+
+        return ResponseEntity.ok(new AllPostResponse());
     }
 //=================================================================================
 
-    public ResponseEntity<ErrorResponse> newPost(NewPostRequest postRequest, Principal principal) {
+    private ResponseEntity<Response> createModerPostList(ModerationStatus moderationStatus,
+                                                         int isActive,
+                                                         User user,
+                                                         int offset,
+                                                         int limit) {
+        ArrayList<PostDTO> postsList = new ArrayList<>();
+        Page<Post> allPosts;
+        int countPosts;
 
-
-        if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
+        allPosts = postRepository.findAllMyPostIsActive(PageRequest.of(offset / limit, limit)
+                , moderationStatus, user.getId(), isActive);
+        countPosts = Math.toIntExact(allPosts.getTotalElements());
+        for (Post allPost : allPosts) {
+            PostDTO newRespPost = createNewResponsePosts(allPost);
+            if (!postsList.contains(newRespPost)) {
+                postsList.add(newRespPost);
+            }
         }
 
-        ErrorResponse errorResponse;
-        HashMap<String, String> errors;
+        return ResponseEntity.ok(new AllPostResponse(countPosts, postsList));
+    }
 
+//=================================================================================
 
-        if (postRequest.getTitle().length() >= 3 &&
-                Jsoup.parse(postRequest.getText()).text().length() >= 50) {
-            errorResponse = new ErrorResponse();
-            var newPost = new Post();
-            newPost.setIsActive(postRequest.getActive());
-            newPost.setModerationStatus(ModerationStatus.NEW);
-            newPost.setModeratorId(0);
-            var user = userRepository.findByEmail(principal.getName());
-            newPost.setUser(user);
-            newPost.setTime(new Date(postRequest.getTimestamp() * 1000));
-            newPost.setTitle(postRequest.getTitle());
-            newPost.setText(postRequest.getText());
-            newPost.setViewCount(0);
-            postRepository.save(newPost);
+    public ResponseEntity<Response> newPost(NewPostRequest postRequest) {
 
-            Long idNewPost = postRepository.findByTimeAndTitleAndModerationStatusAndText(
-                    new Date(postRequest.getTimestamp() * 1000)
-                    , postRequest.getTitle()
-                    , ModerationStatus.NEW
-                    , postRequest.getText()).getId();
+        if (authCheck.securityCheck()) {
+            if (postRequest.getTitle().length() >= 3 &&
+                    Jsoup.parse(postRequest.getText()).text().length() >= 50) {
+                var newPost = new Post();
+                newPost.setIsActive(postRequest.getActive());
+                newPost.setModerationStatus(ModerationStatus.NEW);
+                newPost.setModeratorId(0);
+                var user = userRepository.findByEmail(SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName());
+                newPost.setUser(user);
+                newPost.setTime(new Date(postRequest.getTimestamp() * 1000));
+                newPost.setTitle(postRequest.getTitle());
+                newPost.setText(postRequest.getText());
+                newPost.setViewCount(0);
+                postRepository.save(newPost);
 
-            for (String tag : postRequest.getTags()) {
-                var newTag = new Tag();
-                newTag.setName(tag);
-                if (tagsRepository.findByName(tag).isEmpty()) {
-                    tagsRepository.save(newTag);
+                Long idNewPost = postRepository.findByTimeAndTitleAndModerationStatusAndText(
+                        new Date(postRequest.getTimestamp() * 1000)
+                        , postRequest.getTitle()
+                        , ModerationStatus.NEW
+                        , postRequest.getText()).getId();
+
+                for (String tag : postRequest.getTags()) {
+                    var newTag = new Tag();
+                    newTag.setName(tag);
+                    if (tagsRepository.findByName(tag).isEmpty()) {
+                        tagsRepository.save(newTag);
+                    }
+                    var tagToPost = new TagToPost();
+                    tagToPost.setPostId(idNewPost);
+                    tagToPost.setTagId(tagsRepository.findByName(newTag.getName()).get(0).getId());
+                    tagToPostRepository.save(tagToPost);
                 }
-                var tagToPost = new TagToPost();
-                tagToPost.setPostId(idNewPost);
-                tagToPost.setTagId(tagsRepository.findByName(newTag.getName()).get(0).getId());
-                tagToPostRepository.save(tagToPost);
+                return ResponseEntity.ok(new ErrorResponse(true));
+
             }
 
-            errorResponse.setResult(true);
-            return ResponseEntity.ok(errorResponse);
+            HashMap<String, String> errors = new HashMap<>();
+            if (postRequest.getTitle().length() < 3) {
+                errors.put("title", "Заголовок не установлен");
+            }
+            if (Jsoup.parse(postRequest.getText()).text().length() < 50) {
+                errors.put("text", "Текст публикации слишком короткий");
+            }
 
+            return ResponseEntity.badRequest().body(new ErrorResponse(false, errors));
         }
-
-        errorResponse = new ErrorResponse();
-        errors = new HashMap<>();
-        if (postRequest.getTitle().length() < 3) {
-            errors.put("title", "Заголовок не установлен");
-        }
-        if (Jsoup.parse(postRequest.getText()).text().length() < 50) {
-            errors.put("text", "Текст публикации слишком короткий");
-        }
-        errorResponse.setResult(false);
-        errorResponse.setErrors(errors);
-        return ResponseEntity.ok(errorResponse);
+        return ResponseEntity.badRequest().body(new ErrorResponse());
     }
 
     //=================================================================================
@@ -530,34 +540,36 @@ public class PostService {
 
 //=================================================================================
 
-    public ResponseEntity<ResultResponse> likeVotes(PostVotesRequest postVotesRequest, Principal principal) {
+    public ResponseEntity<Response> likeVotes(PostVotesRequest postVotesRequest) {
+
+        if (authCheck.securityCheck()) {
+
+            return ResponseEntity.ok(new ErrorResponse(false));
+        }
+        return ResponseEntity.ok(setVote(postVotesRequest, 1, SecurityContextHolder
+                .getContext().getAuthentication().getName()));
+    }
+
+
+//=================================================================================
+
+    public ResponseEntity<Response> disLikeVotes(PostVotesRequest postVotesRequest) {
         var response = new ResultResponse();
 
-        if (principal == null) {
-            response.setResult(false);
-            return ResponseEntity.ok(response);
+        if (authCheck.securityCheck()) {
+
+            return ResponseEntity.ok(new ErrorResponse(false));
         }
-        return ResponseEntity.ok(setVote(postVotesRequest, 1, principal));
+        return ResponseEntity.ok(setVote(postVotesRequest, -1, SecurityContextHolder
+                .getContext().getAuthentication().getName()));
     }
 
 //=================================================================================
 
-    public ResponseEntity<ResultResponse> disLikeVotes(PostVotesRequest postVotesRequest, Principal principal) {
-        var response = new ResultResponse();
-
-        if (principal == null) {
-            response.setResult(false);
-            return ResponseEntity.ok(response);
-        }
-        return ResponseEntity.ok(setVote(postVotesRequest, -1, principal));
-    }
-
-//=================================================================================
-
-    private ResultResponse setVote(PostVotesRequest postVotesRequest, Integer number, Principal principal) {
+    private ResultResponse setVote(PostVotesRequest postVotesRequest, Integer number, String email) {
         var response = new ResultResponse();
         var postVotes = new PostVotes();
-        var userID = userRepository.findByEmail(principal.getName());
+        var userID = userRepository.findByEmail(email);
         var postVote = postVotesRepository.findAllVotes(postVotesRequest.getPostId());
         var votes = postVote.stream().filter(a -> a.getUser() == userID).collect(Collectors.toList());
         if (votes.isEmpty()) {
