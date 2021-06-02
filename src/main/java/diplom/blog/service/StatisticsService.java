@@ -10,13 +10,10 @@ import diplom.blog.repo.PostVotesRepository;
 import diplom.blog.repo.UserRepository;
 import diplom.blog.util.AuthCheck;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.util.Comparator;
 
 @Service
@@ -81,20 +78,23 @@ public class StatisticsService {
 
     public ResponseEntity<Response> allStatistics() {
 
-        var settigs = settingsRepository.findById(3L).get().getValue();
+        if (authCheck.securityCheck()) {
 
-        if (settigs.equalsIgnoreCase("YES")) {
-            return createStatisticsResponse();
-        }
-        if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
-        }
 
-        if (userRepository.findByEmail(principal.getName()).getIsModerator() != 1) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
-        }
+            if (settingsRepository.findByCode("STATISTICS_IS_PUBLIC").getValue()
+                    .equalsIgnoreCase("YES")) {
+                return ResponseEntity.ok(createStatisticsResponse());
+            }
 
-        return createStatisticsResponse();
+            if (userRepository.findByEmail(SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getName()).getIsModerator() == 1) {
+                return ResponseEntity.ok(createStatisticsResponse());
+            }
+
+        }
+        return ResponseEntity.ok(createStatisticsResponse());
     }
 
     private StatisticResponse createStatisticsResponse() {
@@ -102,23 +102,23 @@ public class StatisticsService {
         var statisticResponse = new StatisticResponse();
 
         var postsCount = postRepository.findAll();
-        statisticResponse.setPostsCount((long) postsCount.size());
+        statisticResponse.setPostsCount(postsCount.size());
 
-        var likesCount = (long) votesRepository.findAllLikesAndDisLikes(1).size();
+        var likesCount = votesRepository.findAllLikesAndDisLikes(1).size();
         statisticResponse.setLikesCount(likesCount);
 
-        var disLikesCount = (long) votesRepository.findAllLikesAndDisLikes(-1).size();
+        var disLikesCount = votesRepository.findAllLikesAndDisLikes(-1).size();
         statisticResponse.setDislikesCount(disLikesCount);
 
         var countView = 0;
         for (Post view : postsCount) {
             countView = countView + view.getViewCount();
         }
-        statisticResponse.setViewsCount((long) countView);
+        statisticResponse.setViewsCount(countView);
 
         Post oldestPost = postsCount.stream()
                 .min(Comparator.comparing(Post::getTime)).get();
-        statisticResponse.setFirstPublication(oldestPost.getTime().getTime() / 1000);
+        statisticResponse.setFirstPublication((int) (oldestPost.getTime().getTime() / 1000));
         return statisticResponse;
     }
 

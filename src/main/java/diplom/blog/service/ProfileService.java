@@ -104,7 +104,7 @@ public class ProfileService {
                 error.put("name", "Имя указано неверно. ");
             }
         }
-        if (myProfileRequest.getPassword() == null) {
+        if (myProfileRequest.getPassword() != null) {
             if (myProfileRequest.getPassword().length() < 6) {
                 error.put("password", "Пароль короче 6-ти символов");
             }

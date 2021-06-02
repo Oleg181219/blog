@@ -11,6 +11,7 @@ import diplom.blog.model.*;
 import diplom.blog.repo.*;
 import diplom.blog.util.AuthCheck;
 import javassist.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 public class PostService {
     private final PostRepository postRepository;
@@ -64,18 +65,24 @@ public class PostService {
         switch (mode) {
             case "popular":
                 allPosts = postRepository.findPostsOrderByPostComments(PageRequest.of(offset / limit, limit));
+                log.info(String.format("Count Of popular  '%s': ", (allPostResponse == null)));
+                allPostResponse.setPosts(createResponseList(allPosts));
+                // todo error
                 break;
             case "best":
                 allPosts = postRepository.findPostsOrderByLikeCount(PageRequest.of(offset / limit, limit));
                 allPostResponse.setPosts(createResponseList(allPosts));
+                log.info(String.format("Count Of best  '%s': ", allPostResponse.getPosts().size()));
                 break;
             case "early":
                 allPosts = postRepository.findPostsOrderByTimeIncrease(PageRequest.of(offset / limit, limit));
                 allPostResponse.setPosts(createResponseList(allPosts));
+                log.info(String.format("Count Of early  '%s': ", allPostResponse.getPosts().size()));
                 break;
             default:
                 allPosts = postRepository.findPostsOrderByTimeDesc(PageRequest.of(offset / limit, limit));
                 allPostResponse.setPosts(createResponseList(allPosts));
+                log.info(String.format("Count Of recent  '%s': ", allPostResponse.getPosts().size()));
                 break;
         }
 

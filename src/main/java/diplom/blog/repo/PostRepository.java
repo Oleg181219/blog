@@ -46,13 +46,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findPostsOrderByTimeIncrease(Pageable pageable);
 
     @Query("SELECT p " +
-            "FROM Post p " +
-            "LEFT JOIN User u ON u.id = p.user.id " +
-            "LEFT JOIN PostComment pc ON p.id = pc.post.id " +
-            "LEFT JOIN PostVotes pvl ON (p.id = pc.post.id and pvl.value = 1) " +
-            "WHERE (p.isActive = 1 AND p.moderationStatus = 'ACCEPTED' AND p.time <= CURRENT_TIME)" +
-            "GROUP BY p.id ORDER BY size(p.postVotes) desc ")
+            "from Post p " +
+            "left join User u on u.id = p.user.id " +
+            "left join PostComment pc on pc.post.id = p.id " +
+            "left join PostVotes pv on p.id = pv.post.id and pv.value = 1 " +
+            "where (p.isActive = 1 and p.moderationStatus = 'ACCEPTED' and p.time <= CURRENT_TIME) " +
+            "group by p.id order by count(pv) desc ")
     Page<Post> findPostsOrderByLikeCount(Pageable pageable);
+
 
     @Query("SELECT p " +
             "FROM Post p WHERE p.isActive = 1 AND p.moderationStatus = 'ACCEPTED' AND p.time <= CURRENT_TIME"

@@ -9,11 +9,13 @@ import diplom.blog.api.request.NewUserRequest;
 import diplom.blog.api.response.*;
 import diplom.blog.model.CaptchaCode;
 import diplom.blog.model.DtoModel.CaptchaDTO;
+import diplom.blog.model.DtoModel.UserLoginDTO;
 import diplom.blog.model.User;
 import diplom.blog.repo.CaptchaCodesRepository;
 import diplom.blog.repo.GlobalSettingsRepository;
 import diplom.blog.repo.PostRepository;
 import diplom.blog.repo.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
+@Slf4j
 @Service
 public class AuthService {
 
@@ -88,7 +91,7 @@ public class AuthService {
         if (!capCod.getCode().equals(user.getCaptcha())) {
             respMap.put("captcha", "Код с картинки введён неверно");
         }
-        var authResponse = new AuthResponse();
+        var authResponse = new ErrorResponse();
         if (respMap.isEmpty()) {
             authResponse.setResult(true);
 
@@ -100,16 +103,18 @@ public class AuthService {
             newUser.setRegTime(new Date());
             userRepository.save(newUser);
 
-            return ResponseEntity.ok(new AuthResponse(true));
+            return ResponseEntity.ok(new ErrorResponse(true));
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse(false, respMap));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(false, respMap));
     }
 
     //=================================================================================
     public ResponseEntity<?> login(LoginRequest loginRequest) {
-
+        log.info(String.format("Start data email: '%s': ", loginRequest.getEmail()));
+        log.info(String.format("Start data password: '%s': ", loginRequest.getPassword()));
         var curentUser = userRepository.findByEmail(loginRequest.getEmail());
+        log.info(String.format("Current User from DB : '%s':", (curentUser == null)));
         if (curentUser == null) {
             return ResponseEntity.ok(new ErrorResponse(false));
         }
@@ -118,13 +123,14 @@ public class AuthService {
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail()
                         , loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         return ResponseEntity.ok(getLoginResponse(curentUser));
     }
 
     //=================================================================================
     public ResponseEntity<?> logout() {
         SecurityContextHolder.getContext().setAuthentication(null);
-        return ResponseEntity.ok(new AuthResponse(true));
+        return ResponseEntity.ok(new ErrorResponse(true));
     }
 
     //=================================================================================
@@ -155,8 +161,10 @@ public class AuthService {
     }
 
     //=================================================================================
-    public ResponseEntity<Response> restorePassword(String email) throws MessagingException {
+    public ResponseEntity<Response> restorePassword(String email)  {
+
         var user = userRepository.findByEmail(email);
+        log.info(String.format("Find user in restorePassword email: '$s'", (user == null)));
         if (user == null) {
             return ResponseEntity.ok(new ResultResponse(false));
         }
@@ -168,16 +176,16 @@ public class AuthService {
             hash.append(CODE.charAt(index));
         }
         var text = new StringBuilder(pathToRestorePassword).append(hash).toString();//TODO прилепить время
-        var message = emailSender.createMimeMessage();
-        var helper = new MimeMessageHelper(message, true, "utf-8");
-        var htmlMsg = "<a href=\"" + text + "\">Follow the link to change the password on the site</a>";
-
-        message.setContent(htmlMsg, "text/html");
-        helper.setTo(email);
-        helper.setSubject("Test html email");
 
 
-        Runnable task = () -> this.emailSender.send(message);
+        Runnable task = () -> {
+            try {
+                sendMail(text, email);
+            } catch (MessagingException e) {
+                log.info(String.format("MessagingException  '$s'", e.toString() ));
+            }
+
+        };
         Thread thread = new Thread(task);
         thread.start();
 
@@ -187,9 +195,22 @@ public class AuthService {
     }
     //=================================================================================
 
+    private void sendMail (String text, String email) throws MessagingException {
+
+
+        var message = emailSender.createMimeMessage();
+        var helper = new MimeMessageHelper(message, true, "utf-8");
+        var htmlMsg = "<a href=\"" + text + "\">Follow the link to change the password on the site</a>";
+        message.setContent(htmlMsg, "text/html");
+        helper.setTo(email);
+        helper.setSubject("Test html email");
+        log.info(String.format("Message content '%s':", message.toString()));
+        this.emailSender.send(message);
+    }
+
     public ResponseEntity<Response> authPassword(AuthPasswordRequest authPasswordRequest) {
 
-        var authResponse = new AuthResponse();
+        var authResponse = new ErrorResponse();
         var errors = new HashMap<String, String>();
         int userId = 0;
         var code = userRepository.findAll();
@@ -218,7 +239,7 @@ public class AuthService {
         if (!errors.isEmpty()) {
             authResponse.setResult(false);
             authResponse.setErrors(errors);
-            return ResponseEntity.ok(new AuthResponse(false, errors));
+            return ResponseEntity.ok(new ErrorResponse(false, errors));
         }
 
         var user = userRepository.findById(userId);
@@ -287,7 +308,7 @@ public class AuthService {
 
     private LoginResponse getLoginResponse(User curentUser) {
 
-        var userLoginResponse = new UserLoginResponse();
+        var userLoginResponse = new UserLoginDTO();
         userLoginResponse.setEmail(curentUser.getEmail());
         userLoginResponse.setModeration(curentUser.getIsModerator() == 1);
         userLoginResponse.setModerationCount(curentUser.getIsModerator() == 1 ? postRepository.findAllByModerationStatus() : 0);

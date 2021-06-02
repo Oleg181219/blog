@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginRequest {
 
+    @JsonProperty("e_mail")
     private String email;
 
     private String password;

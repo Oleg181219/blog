@@ -1,16 +1,14 @@
-package diplom.blog.api.response;
+package diplom.blog.model.DtoModel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
-public class UserLoginResponse  implements Response{
+public class UserLoginDTO {
     private Long id;
     private String name;
     private String photo;
