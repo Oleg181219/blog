@@ -7,6 +7,8 @@ import diplom.blog.api.response.ResultResponse;
 import diplom.blog.model.User;
 import diplom.blog.repo.UserRepository;
 import diplom.blog.util.AuthCheck;
+import lombok.extern.slf4j.Slf4j;
+import org.imgscalr.Scalr;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,12 +17,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Objects;
 
-import static java.awt.Image.SCALE_DEFAULT;
-
+@Slf4j
 @Service
 public class ProfileService {
     private final FileSystemStorageService fileSystemStorageService;
@@ -36,88 +38,72 @@ public class ProfileService {
     }
 
 
-    public ResponseEntity<Response> profileMy(MultipartFile photo, MyProfileRequest myProfileRequest) throws IOException {
-
+    public ResponseEntity<Response> profileMy(MyProfileRequest myProfileRequest) throws IOException {
+        String name = myProfileRequest.getName();
+        String email = myProfileRequest.getEmail();
+        String password = myProfileRequest.getPassword();
+        Integer removePhoto = myProfileRequest.getRemovePhoto();
+        MultipartFile photo = myProfileRequest.getPhoto();
+        var error = new HashMap<String, String>();
+        User user = userRepository.findByEmail(SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName());
         if (authCheck.securityCheck()) {
-            var user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+            if (name != null) {
+                if (!name.matches("([А-Яа-яA-Za-z0-9-_]+)")) {
+                    error.put("name", "Имя указано неверно. ");
+                } else {
+                    user.setName(name);
 
-            var checkError = checkMyProfileRequest(myProfileRequest, user);
-
-            if (photo.getSize() > 5242880) {
-                checkError.put("photo", "Фото слишком большое, нужно не более 5 Мб");
-            } else {
-                var bufferedImage = ImageIO.read(photo.getInputStream());
-                var ant = bufferedImage.getScaledInstance(36, 36, SCALE_DEFAULT);
-                var fileName = photo.getOriginalFilename();
-                user.setPhoto(fileSystemStorageService.cloudStore(ant, fileName));
+                }
             }
+            if (password != null) {
+                if (password.length() < 6) {
+                    error.put("password", "Пароль короче 6-ти символов");
+                } else {
+                    user.setName(passwordEncoder().encode(password));
 
-            if (!checkError.isEmpty()) {
-                return ResponseEntity.ok(new ErrorResponse(false, checkError));
+                }
             }
+            if (email != null) {
+                if (!email.equals(user.getEmail()) && userRepository.findByEmail(email) != null) {
+                    error.put("email", "Этот e-mail уже зарегистрирован");
+                } else {
+                    user.setEmail(email);
 
+                }
+            }
+            if (removePhoto != null) {
+                if (removePhoto == 1) {
+                    user.setPhoto("empty");
+                }
+                if (removePhoto == 0) {
+                    if (photo.isEmpty()) {
+                        error.put("photo", "файл отсутствует");
+                    }else {
+                        BufferedImage bufferedImageFromFile = Scalr
+                                .resize(ImageIO.read(photo.getInputStream()), 36, 36);
+                        user.setPhoto(fileSystemStorageService
+                                .cloudStore(bufferedImageFromFile, Objects.requireNonNull(photo.getOriginalFilename())));
 
-            user.setName(myProfileRequest.getName());
-            user.setPassword(passwordEncoder().encode(myProfileRequest.getPassword()));
-            user.setEmail(myProfileRequest.getEmail());
+                    }
+                }
+            }
+        }
+        if (error.isEmpty()) {
+            log.info(String.format("user.getName())  '%s': ", user.getName()));
+            log.info(String.format("user.getEmail()  '%s': ", user.getEmail()));
+            log.info(String.format("user.getPassword()  '%s': ", user.getPassword()));
+            log.info(String.format("user.getName())  '%s': ", user.getPhoto()));
             userRepository.save(user);
             return ResponseEntity.ok(new ResultResponse(true));
         }
-        return ResponseEntity.ok(new ResultResponse());
-    }
-
-
-    public ResponseEntity<Response> profileMyWithoutFoto(MyProfileRequest myProfileRequest) {
-
-        if (authCheck.securityCheck()) {
-
-            var user = userRepository.findByEmail(SecurityContextHolder
-                    .getContext()
-                    .getAuthentication()
-                    .getName());
-
-            var checkError = checkMyProfileRequest(myProfileRequest, user);
-            if (!checkError.isEmpty()) {
-                return ResponseEntity.ok(new ErrorResponse(false, checkError));
-            }
-            if (myProfileRequest.getRemovePhoto() == 1) {
-                user.setPhoto(null);
-            }
-            user.setName(myProfileRequest.getName());
-            user.setPassword(passwordEncoder().encode(myProfileRequest.getPassword()));
-            user.setEmail(myProfileRequest.getEmail());
-            userRepository.save(user);
-            return ResponseEntity.ok(new ResultResponse(true));
-        }
-        return ResponseEntity.ok(new ResultResponse());
+        return ResponseEntity.ok(new ErrorResponse(false, error));
     }
 
     private PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
-    }
-
-    private HashMap<String, String> checkMyProfileRequest(MyProfileRequest myProfileRequest, User user) {
-
-        var error = new HashMap<String, String>();
-        if (myProfileRequest.getName() != null) {
-            if (!myProfileRequest.getName().matches("([А-Яа-яA-Za-z0-9-_]+)")) {
-                error.put("name", "Имя указано неверно. ");
-            }
-        }
-        if (myProfileRequest.getPassword() != null) {
-            if (myProfileRequest.getPassword().length() < 6) {
-                error.put("password", "Пароль короче 6-ти символов");
-            }
-        }
-        if (myProfileRequest.getEmail() != null) {
-            List<User> userByEmail = userRepository.findAllUserByEmail(myProfileRequest.getEmail());
-            if (!myProfileRequest.getEmail().equals(user.getEmail())) {
-                if (!userByEmail.isEmpty()) {
-                    error.put("email", "Этот e-mail уже зарегистрирован");
-                }
-            }
-        }
-        return error;
     }
 
 }

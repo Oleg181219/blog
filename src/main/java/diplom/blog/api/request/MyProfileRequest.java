@@ -1,12 +1,13 @@
 package diplom.blog.api.request;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
 public class MyProfileRequest {
 
     private String name;
@@ -15,6 +16,8 @@ public class MyProfileRequest {
 
     private String password;
 
-    private int removePhoto;
+    private Integer removePhoto;
+
+    private MultipartFile photo;
 
 }

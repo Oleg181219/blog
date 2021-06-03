@@ -114,7 +114,7 @@ public class AuthService {
         log.info(String.format("Start data email: '%s': ", loginRequest.getEmail()));
         log.info(String.format("Start data password: '%s': ", loginRequest.getPassword()));
         var curentUser = userRepository.findByEmail(loginRequest.getEmail());
-        log.info(String.format("Current User from DB : '%s':", (curentUser == null)));
+        log.info(String.format("Current User from DB : '%s':", (curentUser != null)));
         if (curentUser == null) {
             return ResponseEntity.ok(new ErrorResponse(false));
         }

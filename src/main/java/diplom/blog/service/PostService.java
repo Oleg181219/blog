@@ -37,7 +37,6 @@ public class PostService {
     private final PostVotesRepository postVotesRepository;
     private final AuthCheck authCheck;
 
-
     @Autowired
     public PostService(PostRepository postRepository,
                        UserRepository userRepository,
@@ -53,12 +52,14 @@ public class PostService {
         this.postCommentRepository = postCommentRepository;
         this.postVotesRepository = postVotesRepository;
         this.authCheck = authCheck;
+
     }
 
     SimpleDateFormat formaterPostDate = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formaterYear = new SimpleDateFormat("yyyy");
 
     public ResponseEntity<Response> allPost(int offset, int limit, String mode) throws NotFoundException {
+
         Page<Post> allPosts;
         var allPostResponse = new AllPostResponse();
 

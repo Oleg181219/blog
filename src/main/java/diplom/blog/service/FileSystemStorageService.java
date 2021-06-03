@@ -4,14 +4,12 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import diplom.blog.api.response.ErrorResponse;
 import diplom.blog.repo.UserRepository;
+import diplom.blog.util.AuthCheck;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -29,9 +27,11 @@ import java.util.regex.Pattern;
 @Service
 public class FileSystemStorageService {
     private final UserRepository userRepository;
+    private final AuthCheck authCheck;
 
-    public FileSystemStorageService(UserRepository userRepository) {
+    public FileSystemStorageService(UserRepository userRepository, AuthCheck authCheck) {
         this.userRepository = userRepository;
+        this.authCheck = authCheck;
     }
 
     @Value("${blog.cloud_name}")
@@ -42,7 +42,7 @@ public class FileSystemStorageService {
     private String API_SECRET;
 
 
-    public String cloudStore(Image photo, String name) throws IOException {
+    public String cloudStore(BufferedImage photo, String name) throws IOException {
 
         var cloudinary = new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", CLOUD_NAME,
@@ -55,12 +55,12 @@ public class FileSystemStorageService {
                 "public_id", path,
                 "overwrite", true);
 
-        var qwer = toBufferedImage(photo);
+
 
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            ImageIO.write(qwer, "png", baos);
+            ImageIO.write(photo, "png", baos);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,38 +77,40 @@ public class FileSystemStorageService {
 
         final var FILE_PATTERN = Pattern.compile("^(.*)(.)(png|jpe?g)$");
 
-        if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        if(authCheck.securityCheck()) {
+            if (image.isEmpty()){
+                return ResponseEntity.badRequest().body(new ErrorResponse(false));
+            }
+            if(!FILE_PATTERN.matcher(Objects.requireNonNull(image.getOriginalFilename())).matches()) {
+                HashMap<String, String> errors = new HashMap<>();
+                errors.put("image", "Файл должен быть изображением png, jpg, jpeg");
+                return ResponseEntity.badRequest().body(new ErrorResponse(false, errors));
+            }
+            if (image.getSize() > 5242880) {
+
+                HashMap<String, String> errors = new HashMap<>();
+                errors.put("image", "Размер файла превышает допустимый размер");
+                return ResponseEntity.ok(new ErrorResponse(false, errors));
+            }
+
+            String path = "/upload/" + getRandomPath() + "/" + image.getOriginalFilename();
+
+            String realPath = request.getServletContext().getRealPath(path);
+
+
+            try {
+                byte[] photo = image.getBytes();
+
+                File file = new File(realPath);
+                FileUtils.writeByteArrayToFile(file, photo);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return path;
         }
-        if (image.isEmpty()
-                || !FILE_PATTERN.matcher(Objects.requireNonNull(image.getOriginalFilename())).matches()) {
-            HashMap<String, String> errors = new HashMap<>();
-            errors.put("image", "Файл должен быть изображением png, jpg, jpeg");
-            return ResponseEntity.ok(new ErrorResponse(false, errors));
-        }
-        if (image.getSize() > 5242880) {
-
-            HashMap<String, String> errors = new HashMap<>();
-            errors.put("image", "Размер файла превышает допустимый размер");
-            return ResponseEntity.ok(new ErrorResponse(false, errors));
-        }
-
-        String path = "/upload/" + getRandomPath() + "/" + image.getOriginalFilename();
-
-        String realPath = request.getServletContext().getRealPath(path);
-
-
-        try {
-            byte[] photo = image.getBytes();
-
-            File file = new File(realPath);
-            FileUtils.writeByteArrayToFile(file, photo);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return path;
+        return ResponseEntity.badRequest().body(new ErrorResponse(false));
     }
 
 

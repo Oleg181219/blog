@@ -4,17 +4,16 @@ import diplom.blog.api.request.CommentRequest;
 import diplom.blog.api.request.ModerationRequest;
 import diplom.blog.api.request.MyProfileRequest;
 import diplom.blog.api.request.SettingRequest;
-import diplom.blog.api.response.*;
+import diplom.blog.api.response.InitResponse;
+import diplom.blog.api.response.Response;
 import diplom.blog.service.*;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/api")
@@ -139,23 +138,9 @@ public class ApiGeneralController {
     /**
      * Редактирование моего профиля
      */
-    @PostMapping(value = "/profile/my",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/profile/my")
     @ApiOperation(value = "Редактирование моего профиля")
-    public ResponseEntity<Response> updateProfileWithPhoto(@RequestParam(value = "photo") MultipartFile photo,
-                                                    @RequestBody MyProfileRequest myProfileRequest) throws IOException {
-        return profileService.profileMy(photo, myProfileRequest);
-    }
-
-    /**
-     * Редактирование моего профиля
-     */
-    @PostMapping(value = "/profile/my",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Редактирование моего профиля")
-    public ResponseEntity<Response> updateProfileWithOutPhoto(@RequestBody MyProfileRequest myProfileRequest) {
-        return profileService.profileMyWithoutFoto(myProfileRequest);
+    public ResponseEntity<Response> updateProfile(@ModelAttribute MyProfileRequest myProfileRequest) throws IOException {
+        return profileService.profileMy(myProfileRequest);
     }
 }
