@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.text.SimpleDateFormat;
@@ -367,7 +368,7 @@ public class PostService {
 
 //=================================================================================
 
-    public ResponseEntity<Response> newPost(NewPostRequest postRequest) {
+    public ResponseEntity<Response> newPost(NewPostRequest postRequest, Errors error) {
 
         if (authCheck.securityCheck()) {
             if (postRequest.getTitle().length() >= 3 &&
@@ -422,7 +423,7 @@ public class PostService {
     }
 
     //=================================================================================
-    public ResponseEntity<Response> editPost(NewPostRequest postRequest, Long id) {
+    public ResponseEntity<Response> editPost(NewPostRequest postRequest, Long id, Errors error) {
         HashMap<String, String> errors = new HashMap<>();
         if (authCheck.securityCheck()) {
 
@@ -472,7 +473,7 @@ public class PostService {
 
 //=================================================================================
 
-    public ResponseEntity<Response> moderationModer(ModerationRequest moderationRequest) {
+    public ResponseEntity<Response> moderationModer(ModerationRequest moderationRequest, Errors errors) {
 
         if (authCheck.securityCheck()) {
             var moderator = userRepository.findByEmail(SecurityContextHolder
@@ -503,7 +504,7 @@ public class PostService {
 
 //=================================================================================
 
-    public ResponseEntity<Response> comment(CommentRequest commentRequest) {
+    public ResponseEntity<Response> comment(CommentRequest commentRequest, Errors error) {
 
         if (authCheck.securityCheck()) {
             var errorResponse = new ErrorResponse();

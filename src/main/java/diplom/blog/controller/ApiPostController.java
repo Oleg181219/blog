@@ -7,7 +7,10 @@ import diplom.blog.service.PostService;
 import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -78,8 +81,8 @@ public class ApiPostController {
      */
     @PostMapping("/post")
     @ApiOperation(value = "Добавление поста")
-    public ResponseEntity<Response> postNewPost(@RequestBody NewPostRequest postRequest) {
-        return postService.newPost(postRequest);
+    public ResponseEntity<Response> postNewPost(@Valid @RequestBody NewPostRequest postRequest, Errors errors) {
+        return postService.newPost(postRequest, errors);
     }
 
     /**
@@ -87,9 +90,10 @@ public class ApiPostController {
      */
     @PutMapping("/post/{id}")
     @ApiOperation(value = "Редактирование поста")
-    public ResponseEntity<Response> editPost(@RequestBody NewPostRequest postRequest,
-                                             @PathVariable long id) {
-        return postService.editPost(postRequest, id);
+    public ResponseEntity<Response> editPost(@Valid @RequestBody NewPostRequest postRequest,
+                                             @PathVariable long id,
+                                             Errors errors) {
+        return postService.editPost(postRequest, id, errors);
     }
 
     /**

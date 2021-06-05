@@ -28,9 +28,11 @@ blog.copyrightFrom: 2021
 blog.lifeTimeCaptchaCode: 1800
 #password all users 12345678
 #mail data
-blog.myEmail: ${EMAIL_BG}
-blog.myPassword: ${EMAIL_PSW}
-blog.address: https://oleg-pr-skillbox.herokuapp.com/login/change-password/
+
+blog:
+  myPassword: ${EMAIL_PSW}
+  myEmail: ${EMAIL_BG}
+  address: https://oleg-pr-skillbox.herokuapp.com/login/change-password/
 #Cloudinary
 blog.cloud_name: ${CLOUD_NAME}
 blog.api_key: ${CLOUD_KEY}

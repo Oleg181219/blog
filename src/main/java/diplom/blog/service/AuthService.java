@@ -6,7 +6,10 @@ import com.github.cage.YCage;
 import diplom.blog.api.request.AuthPasswordRequest;
 import diplom.blog.api.request.LoginRequest;
 import diplom.blog.api.request.NewUserRequest;
-import diplom.blog.api.response.*;
+import diplom.blog.api.response.ErrorResponse;
+import diplom.blog.api.response.LoginResponse;
+import diplom.blog.api.response.Response;
+import diplom.blog.api.response.ResultResponse;
 import diplom.blog.model.CaptchaCode;
 import diplom.blog.model.DtoModel.CaptchaDTO;
 import diplom.blog.model.DtoModel.UserLoginDTO;
@@ -15,7 +18,8 @@ import diplom.blog.repo.CaptchaCodesRepository;
 import diplom.blog.repo.GlobalSettingsRepository;
 import diplom.blog.repo.PostRepository;
 import diplom.blog.repo.UserRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -28,6 +32,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 
 import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
@@ -40,9 +46,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
-@Slf4j
+
 @Service
 public class AuthService {
+
+    private final Logger logger = LogManager.getLogger(AuthService.class);
 
     private final GlobalSettingsRepository globalSettingsRepository;
     private final AuthenticationManager authenticationManager;
@@ -60,6 +68,9 @@ public class AuthService {
     private StringBuilder captchaBaseCode;
 
 
+
+
+
     public AuthService(GlobalSettingsRepository globalSettingsRepository
             , AuthenticationManager authenticationManager
             , CaptchaCodesRepository captchaCodesRepository
@@ -73,24 +84,34 @@ public class AuthService {
     }
 
 
-    public ResponseEntity<Response> register(NewUserRequest user) {
+    public ResponseEntity<Response> register(NewUserRequest user, BindingResult errors) {
+
         HashMap<String, String> respMap = new HashMap<>();
+        logger.error(String.format("NewUserRequest errors '%s'", errors.getAllErrors()));
+        if(errors.hasErrors()) {
+            logger.error(String.format("NewUserRequest errors '%s'", errors.getAllErrors()));
+            if (user.getPassword().length() <= 6) {
+                respMap.put("password", "Пароль короче 6-ти символов");
+            }
+
+            if (!user.getName().matches("([А-Яа-яA-Za-z0-9-_]+)")) {
+                respMap.put("name", "Имя указано неверно. ");
+            }
+        }
+
         var emailResp = userRepository.findByEmail(user.getEmail());
         var capCod = captchaCodesRepository.findBySecretCode(user.getCaptchaSecret());
-        cage = new YCage();
-        if (user.getPassword().length() <= 6) {
-            respMap.put("password", "Пароль короче 6-ти символов");
+
+        if (!capCod.getCode().equals(user.getCaptcha())) {
+            respMap.put("captcha", "Код с картинки введён неверно");
         }
         if (emailResp != null) {
             respMap.put("email", "Этот e-mail уже зарегистрирован");
         }
-        if (!user.getName().matches("([А-Яа-яA-Za-z0-9-_]+)")) {
-            respMap.put("name", "Имя указано неверно. ");
-        }
+
+
+        cage = new YCage();
         BufferedImage image = cage.drawImage(user.getCaptcha());
-        if (!capCod.getCode().equals(user.getCaptcha())) {
-            respMap.put("captcha", "Код с картинки введён неверно");
-        }
         var authResponse = new ErrorResponse();
         if (respMap.isEmpty()) {
             authResponse.setResult(true);
@@ -110,11 +131,14 @@ public class AuthService {
     }
 
     //=================================================================================
-    public ResponseEntity<?> login(LoginRequest loginRequest) {
-        log.info(String.format("Start data email: '%s': ", loginRequest.getEmail()));
-        log.info(String.format("Start data password: '%s': ", loginRequest.getPassword()));
+    public ResponseEntity<Response> login(LoginRequest loginRequest, Errors error) {
+
+        logger.error(String.format("Problem with LoginRequest: '%s'", error.getAllErrors()));
+
+        logger.info(String.format("Start data email: '%s': ", loginRequest.getEmail()));
+
         var curentUser = userRepository.findByEmail(loginRequest.getEmail());
-        log.info(String.format("Current User from DB : '%s':", (curentUser != null)));
+        logger.info(String.format("Current User from DB : '%s':", (curentUser != null)));
         if (curentUser == null) {
             return ResponseEntity.ok(new ErrorResponse(false));
         }
@@ -128,7 +152,7 @@ public class AuthService {
     }
 
     //=================================================================================
-    public ResponseEntity<?> logout() {
+    public ResponseEntity<Response> logout() {
         SecurityContextHolder.getContext().setAuthentication(null);
         return ResponseEntity.ok(new ErrorResponse(true));
     }
@@ -155,16 +179,17 @@ public class AuthService {
         captchaBaseCode = new StringBuilder("data:image/png;base64,");
         BufferedImage image = cage.drawImage(captcha);
         captchaBaseCode.append(createCaptchaString(image));
-        captchaCodesRepository.save(new CaptchaCode(new Date(), captchaBaseCode.toString(), secretCode.toString()));
+//        captchaBaseCode.toString()
+        captchaCodesRepository.save(new CaptchaCode(new Date(), captcha, secretCode.toString()));
         return new CaptchaDTO(secretCode.toString(), captchaBaseCode.toString());
 
     }
 
     //=================================================================================
-    public ResponseEntity<Response> restorePassword(String email)  {
+    public ResponseEntity<Response> restorePassword(String email, Errors errors)  {
 
         var user = userRepository.findByEmail(email);
-        log.info(String.format("Find user in restorePassword email: '$s'", (user == null)));
+        logger.info(String.format("Find user in restorePassword email: '$s'", (user == null)));
         if (user == null) {
             return ResponseEntity.ok(new ResultResponse(false));
         }
@@ -182,7 +207,7 @@ public class AuthService {
             try {
                 sendMail(text, email);
             } catch (MessagingException e) {
-                log.info(String.format("MessagingException  '$s'", e.toString() ));
+                logger.error(String.format("MessagingException  '$s'", e.toString() ));
             }
 
         };
@@ -204,11 +229,11 @@ public class AuthService {
         message.setContent(htmlMsg, "text/html");
         helper.setTo(email);
         helper.setSubject("Test html email");
-        log.info(String.format("Message content '%s':", message.toString()));
+        logger.info(String.format("Message content '%s':", message.toString()));
         this.emailSender.send(message);
     }
 
-    public ResponseEntity<Response> authPassword(AuthPasswordRequest authPasswordRequest) {
+    public ResponseEntity<Response> authPassword(AuthPasswordRequest authPasswordRequest, Errors error) {
 
         var authResponse = new ErrorResponse();
         var errors = new HashMap<String, String>();
@@ -277,7 +302,7 @@ public class AuthService {
             int index = (int) (random.nextFloat() * CODE.length());
             secretCode.append(CODE.charAt(index));
         }
-        int captchaLength = 4 + (int) (Math.random() * 2);
+        int captchaLength = 3;
         while (captchaBuffer.length() < captchaLength) {
             var captcha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
             int index = (int) (random.nextFloat() * captcha.length());

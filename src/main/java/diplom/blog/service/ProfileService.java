@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -38,7 +39,7 @@ public class ProfileService {
     }
 
 
-    public ResponseEntity<Response> profileMy(MyProfileRequest myProfileRequest) throws IOException {
+    public ResponseEntity<Response> profileMy(MyProfileRequest myProfileRequest, BindingResult errors) throws IOException {
         String name = myProfileRequest.getName();
         String email = myProfileRequest.getEmail();
         String password = myProfileRequest.getPassword();

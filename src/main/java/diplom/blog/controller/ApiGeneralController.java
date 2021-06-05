@@ -9,10 +9,12 @@ import diplom.blog.api.response.Response;
 import diplom.blog.service.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
@@ -93,8 +95,8 @@ public class ApiGeneralController {
      */
     @PostMapping("/moderation")
     @ApiOperation(value = "Получение списков постов на модерацию")
-    public ResponseEntity<Response> moderation(@RequestBody ModerationRequest moderationRequest) {
-        return postService.moderationModer(moderationRequest);
+    public ResponseEntity<Response> moderation(@Valid @RequestBody ModerationRequest moderationRequest, BindingResult errors) {
+        return postService.moderationModer(moderationRequest, errors);
     }
 
     /**
@@ -102,8 +104,8 @@ public class ApiGeneralController {
      */
     @PostMapping("/comment")
     @ApiOperation(value = "Отправка комментария к посту")
-    public ResponseEntity<Response> comment(@RequestBody CommentRequest commentRequest) {
-        return postService.comment(commentRequest);
+    public ResponseEntity<Response> comment(@Valid @RequestBody CommentRequest commentRequest, BindingResult errors) {
+        return postService.comment(commentRequest, errors);
     }
 
     /**
@@ -140,7 +142,7 @@ public class ApiGeneralController {
      */
     @PostMapping(value = "/profile/my")
     @ApiOperation(value = "Редактирование моего профиля")
-    public ResponseEntity<Response> updateProfile(@ModelAttribute MyProfileRequest myProfileRequest) throws IOException {
-        return profileService.profileMy(myProfileRequest);
+    public ResponseEntity<Response> updateProfile(@Valid @ModelAttribute MyProfileRequest myProfileRequest, BindingResult error) throws IOException {
+        return profileService.profileMy(myProfileRequest, error);
     }
 }

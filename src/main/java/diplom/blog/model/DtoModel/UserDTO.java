@@ -1,6 +1,7 @@
 package diplom.blog.model.DtoModel;
 
 public class UserDTO {
+
     private Long id;
 
     private String name;
