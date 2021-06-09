@@ -19,4 +19,7 @@ public class LoginResponse  implements Response{
     @JsonProperty("user")
     private UserLoginDTO userLoginDTO;
 
+    public LoginResponse(boolean result) {
+        this.result = result;
+    }
 }

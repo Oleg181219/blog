@@ -10,6 +10,7 @@ import diplom.blog.service.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/auth")
 @Api(value = "/api/auth", description = "Операции с профилем")
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApiAuthController {
 
 
@@ -33,7 +35,8 @@ public class ApiAuthController {
      */
     @PostMapping("/login")
     @ApiOperation(value = "Авторизация")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, BindingResult error) {
+    public ResponseEntity<Response> login(@Valid @RequestBody LoginRequest loginRequest, BindingResult error) {
+
         return  authService.login(loginRequest, error);
     }
 
@@ -42,7 +45,8 @@ public class ApiAuthController {
      */
     @GetMapping("/logout")
     @ApiOperation(value = "Logout")
-    public ResponseEntity<?> logout() {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Response> logout() {
         return authService.logout();
     }
 

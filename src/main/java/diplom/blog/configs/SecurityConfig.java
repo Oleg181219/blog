@@ -1,5 +1,7 @@
 package diplom.blog.configs;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import diplom.blog.api.response.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +15,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -33,18 +38,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .csrf().disable()
-                .cors().disable()
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
                 .formLogin().disable()
-                .httpBasic().disable()
-                .logout().logoutSuccessUrl("http://localhost:8080/")
+                .logout()
+                .logoutUrl("/api/auth/logout")
                 .permitAll()
+                .logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
+                    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    PrintWriter out = httpServletResponse.getWriter();
+                    httpServletResponse.setContentType("application/json");
+                    httpServletResponse.setCharacterEncoding("UTF-8");
+                    out.print(objectMapper.writeValueAsString(new LoginResponse(true)));
+                    out.flush();
+                })
                 .and()
-                .exceptionHandling().accessDeniedPage("/");
+                .httpBasic();
     }
 
     @Bean

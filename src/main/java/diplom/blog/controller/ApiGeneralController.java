@@ -8,7 +8,9 @@ import diplom.blog.api.response.InitResponse;
 import diplom.blog.api.response.Response;
 import diplom.blog.service.*;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +21,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApiGeneralController {
 
     private final InitResponse initResponse;
@@ -59,6 +62,7 @@ public class ApiGeneralController {
      */
     @PutMapping("/settings")
     @ApiOperation(value = "Сохранение настроек")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Response> setSettings(@RequestBody SettingRequest settingRequest) {
         return settingsService.setGlobalSettings(settingRequest);
     }
@@ -95,7 +99,9 @@ public class ApiGeneralController {
      */
     @PostMapping("/moderation")
     @ApiOperation(value = "Получение списков постов на модерацию")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Response> moderation(@Valid @RequestBody ModerationRequest moderationRequest, BindingResult errors) {
+        System.out.println(errors.getAllErrors());
         return postService.moderationModer(moderationRequest, errors);
     }
 
@@ -104,6 +110,7 @@ public class ApiGeneralController {
      */
     @PostMapping("/comment")
     @ApiOperation(value = "Отправка комментария к посту")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Response> comment(@Valid @RequestBody CommentRequest commentRequest, BindingResult errors) {
         return postService.comment(commentRequest, errors);
     }
@@ -113,6 +120,7 @@ public class ApiGeneralController {
      */
     @GetMapping("/statistics/my")
     @ApiOperation(value = "Моя статистика")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Response> myStatistic() {
         return statisticsService.myStatistics();
     }
@@ -131,6 +139,7 @@ public class ApiGeneralController {
      */
     @PostMapping(value = "/image")
     @ApiOperation(value = "Загрузка изображений")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity uploadImage(HttpServletRequest request,
                                          @RequestParam("image") MultipartFile image)  {
 
@@ -140,9 +149,27 @@ public class ApiGeneralController {
     /**
      * Редактирование моего профиля
      */
-    @PostMapping(value = "/profile/my")
+    @PostMapping(value = "/profile/my",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Редактирование моего профиля")
-    public ResponseEntity<Response> updateProfile(@Valid @ModelAttribute MyProfileRequest myProfileRequest, BindingResult error) throws IOException {
-        return profileService.profileMy(myProfileRequest, error);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Response> updateProfile(@RequestParam(value = "photo") MultipartFile photo,
+                                                  @RequestParam(value = "name", required = false) String name,
+                                                  @RequestParam(value = "email", required = false) String email,
+                                                  @RequestParam(value = "password", required = false) String password,
+                                                  @RequestParam(value = "removePhoto", required = false) Integer removePhoto) throws IOException {
+
+        return profileService.profileMyWithPhoto(photo, name, email, password, removePhoto);
+    }
+
+    @PostMapping(value = "/profile/my",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Редактирование моего профиля")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Response> updateProfileMy(@Valid @RequestBody MyProfileRequest myProfileRequest) throws IOException {
+
+        return profileService.profileMy(myProfileRequest);
     }
 }

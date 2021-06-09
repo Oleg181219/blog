@@ -7,6 +7,8 @@ import diplom.blog.service.PostService;
 import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApiPostController {
 
     private final PostService postService;
@@ -101,6 +104,7 @@ public class ApiPostController {
      */
     @GetMapping("/post/moderation")
     @ApiOperation(value = "Список постов на модерацию")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Response> moderation(@RequestParam("offset") int offset,
                                                @RequestParam("limit") int limit,
                                                @RequestParam("status") String status) {
@@ -112,6 +116,7 @@ public class ApiPostController {
      */
     @GetMapping("/post/my")
     @ApiOperation(value = "Список моих постов")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Response> myPost(@RequestParam("offset") int offset,
                                            @RequestParam("limit") int limit,
                                            @RequestParam("status") String status) {
@@ -123,6 +128,7 @@ public class ApiPostController {
      */
     @PostMapping("/post/like")
     @ApiOperation(value = "Лайк поста")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Response> like(@RequestBody PostVotesRequest postVotesRequest) {
         return postService.likeVotes(postVotesRequest);
     }
@@ -132,6 +138,7 @@ public class ApiPostController {
      */
     @PostMapping("/post/dislike")
     @ApiOperation(value = "Дизлайк поста")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Response> disLike(@RequestBody PostVotesRequest postVotesRequest) {
         return postService.disLikeVotes(postVotesRequest);
     }

@@ -1,18 +1,18 @@
 package diplom.blog.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import diplom.blog.api.response.Response;
 import diplom.blog.model.Enum.Role;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User  implements Response {
 
 
     @Id
