@@ -11,8 +11,8 @@ import diplom.blog.api.response.LoginResponse;
 import diplom.blog.api.response.Response;
 import diplom.blog.api.response.ResultResponse;
 import diplom.blog.model.CaptchaCode;
-import diplom.blog.model.DtoModel.CaptchaDTO;
-import diplom.blog.model.DtoModel.UserLoginDTO;
+import diplom.blog.model.dtoModel.CaptchaDTO;
+import diplom.blog.model.dtoModel.UserLoginDTO;
 import diplom.blog.model.User;
 import diplom.blog.repo.CaptchaCodesRepository;
 import diplom.blog.repo.GlobalSettingsRepository;
@@ -129,14 +129,11 @@ public class AuthService {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(false, respMap));
     }
-
+l
     //=================================================================================
     public ResponseEntity<Response> login(LoginRequest loginRequest, Errors error) {
-
         logger.error(String.format("Problem with LoginRequest: '%s'", error.getAllErrors()));
-
         logger.info(String.format("Start data email: '%s': ", loginRequest.getEmail()));
-
         var curentUser = userRepository.findByEmail(loginRequest.getEmail());
         logger.info(String.format("Current User from DB : '%s':", (curentUser != null)));
         if (curentUser == null) {

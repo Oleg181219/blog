@@ -5,7 +5,7 @@ import diplom.blog.api.request.ModerationRequest;
 import diplom.blog.api.request.NewPostRequest;
 import diplom.blog.api.request.PostVotesRequest;
 import diplom.blog.api.response.*;
-import diplom.blog.model.DtoModel.*;
+import diplom.blog.model.dtoModel.*;
 import diplom.blog.model.Enum.ModerationStatus;
 import diplom.blog.model.*;
 import diplom.blog.repo.*;

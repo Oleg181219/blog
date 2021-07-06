@@ -1,4 +1,4 @@
-package diplom.blog.model.DtoModel;
+package diplom.blog.model.dtoModel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

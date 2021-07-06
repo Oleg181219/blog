@@ -5,7 +5,7 @@ import diplom.blog.api.request.AuthRestoreRequest;
 import diplom.blog.api.request.LoginRequest;
 import diplom.blog.api.request.NewUserRequest;
 import diplom.blog.api.response.Response;
-import diplom.blog.model.DtoModel.CaptchaDTO;
+import diplom.blog.model.dtoModel.CaptchaDTO;
 import diplom.blog.service.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -2,7 +2,7 @@ package diplom.blog.service;
 
 import diplom.blog.api.response.Response;
 import diplom.blog.api.response.TagResponse;
-import diplom.blog.model.DtoModel.TagDTO;
+import diplom.blog.model.dtoModel.TagDTO;
 import diplom.blog.model.Post;
 import diplom.blog.model.Tag;
 import diplom.blog.repo.PostRepository;

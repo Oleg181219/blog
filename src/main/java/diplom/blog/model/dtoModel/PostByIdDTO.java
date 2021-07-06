@@ -1,4 +1,4 @@
-package diplom.blog.model.DtoModel;
+package diplom.blog.model.dtoModel;
 
 import diplom.blog.api.response.Response;
 
