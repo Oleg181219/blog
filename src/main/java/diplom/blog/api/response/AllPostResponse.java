@@ -1,7 +1,7 @@
 package diplom.blog.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import diplom.blog.model.DtoModel.PostDTO;
+import diplom.blog.model.dtoModel.PostDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

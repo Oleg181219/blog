@@ -7,7 +7,6 @@ import diplom.blog.api.response.ResultResponse;
 import diplom.blog.model.User;
 import diplom.blog.repo.UserRepository;
 import diplom.blog.util.AuthCheck;
-import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
 
-@Slf4j
+
 @Service
 public class ProfileService {
     private final FileSystemStorageService fileSystemStorageService;
@@ -81,10 +80,6 @@ public class ProfileService {
             }
         }
         if (error.isEmpty()) {
-            log.info(String.format("user.getName())  '%s': ", user.getName()));
-            log.info(String.format("user.getEmail()  '%s': ", user.getEmail()));
-            log.info(String.format("user.getPassword()  '%s': ", user.getPassword()));
-            log.info(String.format("user.getName())  '%s': ", user.getPhoto()));
             userRepository.save(user);
             return ResponseEntity.ok(new ResultResponse(true));
         }
@@ -92,15 +87,12 @@ public class ProfileService {
     }
 
     public ResponseEntity<Response> profileMyWithPhoto(MultipartFile photo,
-            String name, String email, String password, Integer removePhoto
-            ) throws IOException {
+                                                       String name,
+                                                       String email,
+                                                       String password,
+                                                       Integer removePhoto) throws IOException {
 
-
-//        String name = myProfileRequest.getName();
-//        String email = myProfileRequest.getEmail();
-//        String password = myProfileRequest.getPassword();
-//        Integer removePhoto = myProfileRequest.getRemovePhoto();
-        var photoNew = photo.getOriginalFilename();
+//        var photoNew = photo.getOriginalFilename();
         var error = new HashMap<String, String>();
         User user = userRepository.findByEmail(SecurityContextHolder
                 .getContext()
@@ -149,10 +141,6 @@ public class ProfileService {
             }
         }
         if (error.isEmpty()) {
-            log.info(String.format("user.getName())  '%s': ", user.getName()));
-            log.info(String.format("user.getEmail()  '%s': ", user.getEmail()));
-            log.info(String.format("user.getPassword()  '%s': ", user.getPassword()));
-            log.info(String.format("user.getName())  '%s': ", user.getPhoto()));
             userRepository.save(user);
             return ResponseEntity.ok(new ResultResponse(true));
         }

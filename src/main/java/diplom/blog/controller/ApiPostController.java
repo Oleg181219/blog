@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +16,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApiPostController {
 
     private final PostService postService;

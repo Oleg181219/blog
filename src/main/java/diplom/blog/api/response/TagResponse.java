@@ -1,6 +1,6 @@
 package diplom.blog.api.response;
 
-import diplom.blog.model.DtoModel.TagDTO;
+import diplom.blog.model.dtoModel.TagDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.stereotype.Component;

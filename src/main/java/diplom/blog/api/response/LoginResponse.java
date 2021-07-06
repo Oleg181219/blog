@@ -1,7 +1,7 @@
 package diplom.blog.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import diplom.blog.model.DtoModel.UserLoginDTO;
+import diplom.blog.model.dtoModel.UserLoginDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
